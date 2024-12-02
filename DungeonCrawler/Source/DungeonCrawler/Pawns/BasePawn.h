@@ -23,9 +23,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-private:
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="Movement")
+	//****************
+	//--= MOVEMENT =--
+	//****************
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Move();
+	virtual void Move_Implementation();
+private:
 };

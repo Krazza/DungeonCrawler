@@ -14,11 +14,6 @@ UCLASS()
 class DUNGEONCRAWLER_API ADCPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-protected:
-	virtual void BeginPlay() override;
-	virtual void SetupInputComponent() override;
-
-	
 public:
 private:
 	
