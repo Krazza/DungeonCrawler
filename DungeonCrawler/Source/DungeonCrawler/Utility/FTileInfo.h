@@ -9,9 +9,9 @@ struct FTileInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bIsBLocked;
+	bool bIsBlocked;
 
 	FTileInfo()
-		: bIsBLocked(false)
+		: bIsBlocked(false)
 	{}
 };

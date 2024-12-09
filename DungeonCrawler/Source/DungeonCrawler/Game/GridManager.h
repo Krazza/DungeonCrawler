@@ -3,24 +3,30 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
 #include "DungeonCrawler/Utility/FTileInfo.h"
 #include "GridManager.generated.h"
 
-UCLASS(Blueprintable)
-class DUNGEONCRAWLER_API UGridManager : public UObject
+class UPaperTileMap;
+
+UCLASS()
+class DUNGEONCRAWLER_API AGridManager : public AActor
 {
 	GENERATED_BODY()
 
 public:
+	virtual void BeginPlay() override;
+	
 	UFUNCTION(BlueprintCallable, Category="Grid")
 	void InitializeGrid(int32 InRows, int32 InColumns, float InTileSize);
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	bool IsTileBlocked(int32 Row, int32 Column) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	void UpdateGridBasedOnTileMap(UPaperTileMap* TileMap, const TArray<int32>& ImmovableObstacleIDs);
 	
-	UFUNCTION(BlueprintCallable, Category="Grid")
-	void BlockTilesFromObstacles();
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	void SetTileState(FIntPoint TilePosition, bool bIsBlocked);
 
 private:
 	int32 Rows;
@@ -28,4 +34,11 @@ private:
 	float TileSize;
 	
 	TArray<TArray<FTileInfo>> Grid;
+
+	FVector2D WorldToGridPosition(const FVector& WorldLocation) const;
+
+	// -== DEBUG ==-
+	void DrawDebugGrid();
+	void ConstructDebugGrid(TArray<TArray<char>>& GridVisuals);
+	void PrintDebugGrid(TArray<TArray<char>>& GridVisuals);
 };
