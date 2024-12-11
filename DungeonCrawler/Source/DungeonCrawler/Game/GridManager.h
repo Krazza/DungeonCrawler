@@ -14,6 +14,8 @@ class DUNGEONCRAWLER_API AGridManager : public AActor
 	GENERATED_BODY()
 
 public:
+	AGridManager();
+	
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintCallable, Category="Grid")
@@ -28,16 +30,28 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	void SetTileState(FIntPoint TilePosition, bool bIsBlocked);
 
-private:
+	//Level DA origin
+	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	int32 Rows;
+	//Level DA origin
+	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	int32 Columns;
-	float TileSize;
+	//Level DA origin
+	UPROPERTY(BlueprintReadOnly, Category = "Grid")
+	int32 TileSize;
+private:
 	
 	TArray<TArray<FTileInfo>> Grid;
 
 	FVector2D WorldToGridPosition(const FVector& WorldLocation) const;
 
 	// -== DEBUG ==-
+	// Editor procedural mesh grid
+	//void CreateHorizontalLines();
+	//void CreateVerticalLines();
+	//void CreateLine(FVector StartPosition, FVector EndPosition, float LineThickness, TArray<FVector>& Vertices, TArray<int32>& LineTriangles);
+
+	// Console Grid
 	void DrawDebugGrid();
 	void ConstructDebugGrid(TArray<TArray<char>>& GridVisuals);
 	void PrintDebugGrid(TArray<TArray<char>>& GridVisuals);

@@ -7,10 +7,16 @@
 #include "PaperTileMap.h"
 #include "Kismet/GameplayStatics.h"
 
+AGridManager::AGridManager()
+{
+	Rows = 10;
+	Columns = 10;
+	TileSize = 160.f;
+}
+
 void AGridManager::BeginPlay()
 {
 	Super::BeginPlay();
-	//
 }
 
 void AGridManager::InitializeGrid(int32 InRows, int32 InColumns, float InTileSize)

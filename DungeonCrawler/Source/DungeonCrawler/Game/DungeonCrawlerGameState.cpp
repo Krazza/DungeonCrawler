@@ -4,6 +4,7 @@
 #include "DungeonCrawlerGameState.h"
 #include "PaperTileMap.h"
 #include "GridManager.h"
+#include "Kismet/GameplayStatics.h"
 
 ADungeonCrawlerGameState::ADungeonCrawlerGameState()
 	: GridManager(nullptr)
@@ -23,11 +24,18 @@ void ADungeonCrawlerGameState::BeginPlay()
 void ADungeonCrawlerGameState::InitializeGridManager()
 {
 	if(!GetWorld()) return;
-
-	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.Owner = this;
-	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	GridManager = GetWorld()->SpawnActor<AGridManager>(AGridManager::StaticClass(), FVector::Zero(), FRotator());
+	
+	FVector SpawnLocation(0.f, 0.f, 0.f);
+	FRotator SpawnRotation(0.f, 0.f, 0.f);
+	
+	//GridManager = GetWorld()->SpawnActor<AGridManager>(AGridManager::StaticClass(), FVector::Zero(), FRotator());
+	GridManager = GetWorld()->SpawnActorDeferred<AGridManager>(
+		AGridManager::StaticClass(),
+		FTransform(SpawnRotation,
+		SpawnLocation),
+		this,
+		nullptr,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 	if(GridManager)
 	{
@@ -40,6 +48,8 @@ void ADungeonCrawlerGameState::InitializeGridManager()
 		{
 			GridManager->UpdateGridBasedOnTileMap(TileMap, ImmovableObstacleIDs);
 		}
+
+		UGameplayStatics::FinishSpawningActor(GridManager, FTransform(SpawnRotation, SpawnLocation));
 	}
 	else
 	{
