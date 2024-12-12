@@ -8,6 +8,8 @@
 
 class UPaperTileMap;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGridManagerInitialized);
+
 UCLASS()
 class DUNGEONCRAWLER_API AGridManager : public AActor
 {
@@ -30,6 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	void SetTileState(FIntPoint TilePosition, bool bIsBlocked);
 
+	UPROPERTY(BlueprintAssignable, Category="Grid")
+	FOnGridManagerInitialized OnGridManagerInitialized;
+
 	//Level DA origin
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	int32 Rows;
@@ -38,7 +43,7 @@ public:
 	int32 Columns;
 	//Level DA origin
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
-	int32 TileSize;
+	float TileSize;
 private:
 	
 	TArray<TArray<FTileInfo>> Grid;

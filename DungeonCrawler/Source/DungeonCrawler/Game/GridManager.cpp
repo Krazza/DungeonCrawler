@@ -12,6 +12,9 @@ AGridManager::AGridManager()
 	Rows = 10;
 	Columns = 10;
 	TileSize = 160.f;
+
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(RootComponent);
 }
 
 void AGridManager::BeginPlay()
@@ -73,6 +76,7 @@ void AGridManager::UpdateGridBasedOnTileMap(UPaperTileMap* TileMap, const TArray
 	}
 	//DEBUG GRID VISUALIZATION
 	DrawDebugGrid();
+	OnGridManagerInitialized.Broadcast();
 }
 
 void AGridManager::SetTileState(FIntPoint TilePosition, bool bIsBlocked)

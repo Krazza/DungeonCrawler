@@ -17,7 +17,7 @@ ADungeonCrawlerGameState::ADungeonCrawlerGameState()
 void ADungeonCrawlerGameState::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	InitializeGridManager();
 }
 
@@ -25,17 +25,17 @@ void ADungeonCrawlerGameState::InitializeGridManager()
 {
 	if(!GetWorld()) return;
 	
-	FVector SpawnLocation(0.f, 0.f, 0.f);
+	FVector SpawnLocation(-80.f, -80.f, 0.f);
 	FRotator SpawnRotation(0.f, 0.f, 0.f);
 	
-	//GridManager = GetWorld()->SpawnActor<AGridManager>(AGridManager::StaticClass(), FVector::Zero(), FRotator());
 	GridManager = GetWorld()->SpawnActorDeferred<AGridManager>(
 		AGridManager::StaticClass(),
-		FTransform(SpawnRotation,
-		SpawnLocation),
+		FTransform(SpawnRotation, SpawnLocation),
 		this,
 		nullptr,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	
+	GridManager->OnGridManagerInitialized.AddDynamic(this, &ADungeonCrawlerGameState::OnGridManagerInitialized);
 
 	if(GridManager)
 	{

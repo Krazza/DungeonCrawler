@@ -28,6 +28,10 @@ public:
 	//Walls & obstacles
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<int32> ImmovableObstacleIDs;
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
+	void OnGridManagerInitialized();
 private:
 	UPROPERTY()
 	AGridManager* GridManager;
