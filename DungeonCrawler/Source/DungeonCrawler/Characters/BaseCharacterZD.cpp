@@ -28,3 +28,8 @@ void ABaseCharacterZD::Move(FIntPoint Direction, int Steps)
 {
 	
 }
+
+void ABaseCharacterZD::SetPosition(FIntPoint Position)
+{
+	CurrentPosition = Position;
+}

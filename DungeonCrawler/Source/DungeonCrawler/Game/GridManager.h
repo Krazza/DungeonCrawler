@@ -51,10 +51,6 @@ private:
 	FVector2D WorldToGridPosition(const FVector& WorldLocation) const;
 
 	// -== DEBUG ==-
-	// Editor procedural mesh grid
-	//void CreateHorizontalLines();
-	//void CreateVerticalLines();
-	//void CreateLine(FVector StartPosition, FVector EndPosition, float LineThickness, TArray<FVector>& Vertices, TArray<int32>& LineTriangles);
 
 	// Console Grid
 	void DrawDebugGrid();

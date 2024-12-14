@@ -4,14 +4,21 @@
 #include "DungeonCrawlerGameState.h"
 #include "PaperTileMap.h"
 #include "GridManager.h"
+#include "DungeonCrawler/Utility/ULevelSettings.h"
 #include "Kismet/GameplayStatics.h"
 
 ADungeonCrawlerGameState::ADungeonCrawlerGameState()
-	: GridManager(nullptr)
+	: TileMap(nullptr),
+	Rows(0),
+	Columns(0),
+	TileSize(0),
+	GridOffset(0, 0,0),
+	ImmovableObstacleIDs(),
+	PlayerStartTile(1,1),
+	LevelExitTile(18, 18),
+	GridManager(nullptr)
 {
-	TileMap = nullptr;
-	//GET from a level DataAsset
-	ImmovableObstacleIDs = {0, 1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 41, 42, 43, 44, 45, 50, 51, 52, 53, 54, 55, 78};
+	
 }
 
 void ADungeonCrawlerGameState::BeginPlay()
@@ -21,11 +28,35 @@ void ADungeonCrawlerGameState::BeginPlay()
 	InitializeGridManager();
 }
 
+void ADungeonCrawlerGameState::InitializeGridSettings(UULevelSettings* LevelSettingsDataAsset)
+{
+	if(!LevelSettingsDataAsset)
+		return;
+
+	TileMap = LevelSettingsDataAsset->LevelSettings.TileMap;
+	Rows = LevelSettingsDataAsset->LevelSettings.Rows;
+	Columns = LevelSettingsDataAsset->LevelSettings.Columns;
+	TileSize = LevelSettingsDataAsset->LevelSettings.TileSize;
+	GridOffset = LevelSettingsDataAsset->LevelSettings.GridOffset;
+	ImmovableObstacleIDs = LevelSettingsDataAsset->LevelSettings.ImmovableObstacleIDs;
+	PlayerStartTile = LevelSettingsDataAsset->LevelSettings.PlayerStartTile;
+	LevelExitTile = LevelSettingsDataAsset->LevelSettings.LevelExitTile;
+}
+
+void ADungeonCrawlerGameState::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if(GridManager)
+	{
+		GridManager->OnGridManagerInitialized.Broadcast();
+	}
+}
+
 void ADungeonCrawlerGameState::InitializeGridManager()
 {
 	if(!GetWorld()) return;
 	
-	FVector SpawnLocation(-80.f, -80.f, 0.f);
+	FVector SpawnLocation(GridOffset.X, GridOffset.Y, 0.f);
 	FRotator SpawnRotation(0.f, 0.f, 0.f);
 	
 	GridManager = GetWorld()->SpawnActorDeferred<AGridManager>(
@@ -40,9 +71,7 @@ void ADungeonCrawlerGameState::InitializeGridManager()
 	if(GridManager)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager created"));
-		//Grid parameters (number of rows and columns) have to be identical to TileMap parameters
-		//GET from a level DataAsset
-		GridManager->InitializeGrid(20, 20, 160.f);
+		GridManager->InitializeGrid(Rows, Columns, TileSize);
 
 		if(TileMap)
 		{

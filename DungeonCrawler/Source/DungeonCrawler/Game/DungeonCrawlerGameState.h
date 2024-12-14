@@ -8,6 +8,7 @@
 
 class AGridManager;
 class UPaperTileMap;
+class UULevelSettings;
 
 UCLASS()
 class DUNGEONCRAWLER_API ADungeonCrawlerGameState : public AGameStateBase
@@ -19,19 +20,40 @@ public:
 	
 	virtual void BeginPlay() override;
 
+	virtual void InitializeGridSettings(UULevelSettings* LevelSettingsDataAsset);
+	
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	AGridManager* GetGridManager() const;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	//Grid parameters 
+	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	UPaperTileMap* TileMap;
+	//(number of rows and columns) have to be identical to TileMap parameters
+	UPROPERTY(BlueprintReadOnly, Category = "Grid")
+	int32 Rows;
+	//(number of rows and columns) have to be identical to TileMap parameters
+	UPROPERTY(BlueprintReadOnly, Category = "Grid")
+	int32 Columns;
 
-	//Walls & obstacles
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Grid")
+	float TileSize;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Grid")
+	FVector GridOffset;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	TArray<int32> ImmovableObstacleIDs;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Level")
+	FIntPoint PlayerStartTile;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Level")
+	FIntPoint LevelExitTile;
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
 	void OnGridManagerInitialized();
+
+	virtual void PostInitializeComponents() override;
 private:
 	UPROPERTY()
 	AGridManager* GridManager;

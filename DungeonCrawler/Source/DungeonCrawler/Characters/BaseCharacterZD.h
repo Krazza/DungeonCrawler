@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "PaperZDCharacter.h"
-
 #include "BaseCharacterZD.generated.h"
 
 UCLASS()
@@ -25,6 +24,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Move(FIntPoint Direction, int Steps = 1);
+
+	// For StartingPosition() and alike
+	void SetPosition(FIntPoint Position);
 private:
 	FIntPoint CurrentPosition;
 };

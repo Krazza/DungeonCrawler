@@ -76,7 +76,8 @@ void AGridManager::UpdateGridBasedOnTileMap(UPaperTileMap* TileMap, const TArray
 	}
 	//DEBUG GRID VISUALIZATION
 	DrawDebugGrid();
-	OnGridManagerInitialized.Broadcast();
+	//GRID READY FOR ACTION BROADCAST
+	//OnGridManagerInitialized.Broadcast();
 }
 
 void AGridManager::SetTileState(FIntPoint TilePosition, bool bIsBlocked)
