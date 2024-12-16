@@ -25,7 +25,18 @@ void ADungeonCrawlerGameState::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitializeGridManager();
+	//continue here.
+	//need to figure out a way to pass a valid GridManager ref. to the GameMode
+	//position player character at the start
+	if(GridManager)
+	{
+		GridManager->OnGridManagerInitialized.Broadcast();
+		UE_LOG(LogTemp, Display, TEXT("Game State components initialized, Broadcast complete."));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No broadcast."));
+	}
 }
 
 void ADungeonCrawlerGameState::InitializeGridSettings(UULevelSettings* LevelSettingsDataAsset)
@@ -41,15 +52,8 @@ void ADungeonCrawlerGameState::InitializeGridSettings(UULevelSettings* LevelSett
 	ImmovableObstacleIDs = LevelSettingsDataAsset->LevelSettings.ImmovableObstacleIDs;
 	PlayerStartTile = LevelSettingsDataAsset->LevelSettings.PlayerStartTile;
 	LevelExitTile = LevelSettingsDataAsset->LevelSettings.LevelExitTile;
-}
 
-void ADungeonCrawlerGameState::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-	if(GridManager)
-	{
-		GridManager->OnGridManagerInitialized.Broadcast();
-	}
+	InitializeGridManager();
 }
 
 void ADungeonCrawlerGameState::InitializeGridManager()
@@ -65,8 +69,6 @@ void ADungeonCrawlerGameState::InitializeGridManager()
 		this,
 		nullptr,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	
-	GridManager->OnGridManagerInitialized.AddDynamic(this, &ADungeonCrawlerGameState::OnGridManagerInitialized);
 
 	if(GridManager)
 	{
@@ -79,6 +81,7 @@ void ADungeonCrawlerGameState::InitializeGridManager()
 		}
 
 		UGameplayStatics::FinishSpawningActor(GridManager, FTransform(SpawnRotation, SpawnLocation));
+		GridManager->OnGridManagerInitialized.AddDynamic(this, &ADungeonCrawlerGameState::OnGridManagerInitialized);
 	}
 	else
 	{

@@ -50,10 +50,9 @@ public:
 	FIntPoint LevelExitTile;
 
 protected:
+	// Used to spawn the procedural mesh for Grid in editor visualization
 	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
 	void OnGridManagerInitialized();
-
-	virtual void PostInitializeComponents() override;
 private:
 	UPROPERTY()
 	AGridManager* GridManager;
