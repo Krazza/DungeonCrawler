@@ -24,19 +24,7 @@ ADungeonCrawlerGameState::ADungeonCrawlerGameState()
 void ADungeonCrawlerGameState::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//continue here.
-	//need to figure out a way to pass a valid GridManager ref. to the GameMode
-	//position player character at the start
-	if(GridManager)
-	{
-		GridManager->OnGridManagerInitialized.Broadcast();
-		UE_LOG(LogTemp, Display, TEXT("Game State components initialized, Broadcast complete."));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No broadcast."));
-	}
+	OnGridManagerInitialized.Broadcast();
 }
 
 void ADungeonCrawlerGameState::InitializeGridSettings(UULevelSettings* LevelSettingsDataAsset)
@@ -81,7 +69,7 @@ void ADungeonCrawlerGameState::InitializeGridManager()
 		}
 
 		UGameplayStatics::FinishSpawningActor(GridManager, FTransform(SpawnRotation, SpawnLocation));
-		GridManager->OnGridManagerInitialized.AddDynamic(this, &ADungeonCrawlerGameState::OnGridManagerInitialized);
+		OnGridManagerInitialized.AddDynamic(this, &ADungeonCrawlerGameState::HandleGridManagerInitialized);
 	}
 	else
 	{

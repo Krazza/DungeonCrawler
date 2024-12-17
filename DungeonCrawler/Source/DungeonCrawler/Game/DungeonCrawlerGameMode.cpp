@@ -10,11 +10,15 @@
 ADungeonCrawlerGameMode::ADungeonCrawlerGameMode()
 {
 	PlayerCharacterZD = nullptr;
+	DungeonGameState = nullptr;
+	PlayerController = nullptr;
 }
 
 void ADungeonCrawlerGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+	PlayerController = Cast<ADCPlayerController>(GetWorld()->GetFirstPlayerController());
+	DungeonGameState->OnGridManagerInitialized.AddDynamic(this, &ADungeonCrawlerGameMode::OnGridManagerInitialized);
 }
 
 void ADungeonCrawlerGameMode::InitGameState()
@@ -25,7 +29,7 @@ void ADungeonCrawlerGameMode::InitGameState()
 
 	if (DungeonLevelScriptActor && DungeonLevelScriptActor->LevelSettings)
 	{
-		ADungeonCrawlerGameState* DungeonGameState = GetGameState<ADungeonCrawlerGameState>();
+		DungeonGameState = GetGameState<ADungeonCrawlerGameState>();
 		if (DungeonGameState)
 		{
 			DungeonGameState->InitializeGridSettings(DungeonLevelScriptActor->LevelSettings);
@@ -37,22 +41,26 @@ void ADungeonCrawlerGameMode::PositionPlayerCharacter()
 {
 	if(!GetWorld())
 		return;
-
+	
 	if(!PlayerCharacterZD)
 	{
-		ADCPlayerController* PlayerController = Cast<ADCPlayerController>(GetWorld()->GetFirstPlayerController());
 		if(PlayerController)
 		{
 			PlayerCharacterZD = Cast<ABaseCharacterZD>(PlayerController->GetPawn());
 		}
 	}
+	
 	if(PlayerCharacterZD)
 	{
-		//PlayerCharacterZD->SetPosition()
+		PlayerCharacterZD->SetPosition(DungeonGameState->PlayerStartTile);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("GameMode failed to set player start position, invalid character reference."));
 	}
 }
 
 void ADungeonCrawlerGameMode::OnGridManagerInitialized_Implementation()
 {
-	UE_LOG(LogTemp, Display, TEXT("GameMode registered the GridManager initialization."));
+	PositionPlayerCharacter();
 }

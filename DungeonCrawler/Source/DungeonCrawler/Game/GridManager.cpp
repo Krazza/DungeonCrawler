@@ -39,11 +39,21 @@ void AGridManager::InitializeGrid(int32 InRows, int32 InColumns, float InTileSiz
 	}
 }
 
-bool AGridManager::IsTileBlocked(int32 Row, int32 Column) const
+void AGridManager::SetTileState(FIntPoint TilePosition, bool bIsBlocked)
 {
-	if(Row >=0 && Row < Rows && Column >=0 && Column < Columns)
+	//TilePosition.X corresponds to the row (Y-axis)
+	//TilePosition.Y corresponds to the column (X-axis)
+	if(TilePosition.X >= 0 && TilePosition.X < Rows && TilePosition.Y >= 0 && TilePosition.Y < Columns)
 	{
-		return Grid[Row][Column].bIsBlocked;
+		Grid[TilePosition.X][TilePosition.Y].bIsBlocked = bIsBlocked;
+	}
+}
+
+bool AGridManager::IsTileBlocked(FIntPoint(Position)) const
+{
+	if(Position.X > 0 && Position.X < Rows && Position.Y > 0 && Position.Y < Columns)
+	{
+		return Grid[Position.X][Position.Y].bIsBlocked;
 	}
 	return true;
 }
@@ -75,26 +85,76 @@ void AGridManager::UpdateGridBasedOnTileMap(UPaperTileMap* TileMap, const TArray
 		}
 	}
 	//DEBUG GRID VISUALIZATION
-	DrawDebugGrid();
-	//GRID READY FOR ACTION BROADCAST
-	//OnGridManagerInitialized.Broadcast();
+	//DrawDebugGrid();
 }
 
-void AGridManager::SetTileState(FIntPoint TilePosition, bool bIsBlocked)
+float AGridManager::GetGridHeight() const
 {
-	//TilePosition.X corresponds to the row (Y-axis)
-	//TilePosition.Y corresponds to the column (X-axis)
-	if(TilePosition.X >= 0 && TilePosition.X < Rows && TilePosition.Y >= 0 && TilePosition.Y < Columns)
+	return TileSize * Rows;
+}
+
+float AGridManager::GetGridWidth() const
+{
+	return TileSize * Columns;
+}
+
+FIntPoint AGridManager::WorldToGridPosition(const FVector& WorldLocation) const
+{
+	int32 Row = FMath::FloorToInt(((WorldLocation.X - GetActorLocation().X)/GetGridHeight()) * Rows);
+	int32 Column = FMath::FloorToInt(((WorldLocation.Y - GetActorLocation().Y)/GetGridWidth()) * Columns);
+
+	if(IsTileValid(FIntPoint(Row, Column)))
+		return FIntPoint(Row, Column);
+	
+	return FIntPoint(0, 0);
+}
+
+FVector AGridManager::GridToWorldPosition(const FIntPoint& GridLocation, bool bIsCenter) const
+{
+	if(IsTileValid(GridLocation))
 	{
-		Grid[TilePosition.X][TilePosition.Y].bIsBlocked = bIsBlocked;
+		float X = GridLocation.X * TileSize + GetActorLocation().X;
+		float Y = GridLocation.Y * TileSize + GetActorLocation().Y;
+		float Z = 20.f;
+
+		if(bIsCenter)
+		{
+			X += TileSize/2;
+			Y += TileSize/2;
+		}
+		
+		return FVector(Y, X, Z);
 	}
+	return FVector(0.f, 0.f, 0.f);
 }
 
-FVector2D AGridManager::WorldToGridPosition(const FVector& WorldLocation) const
+bool AGridManager::IsTileValid(FIntPoint Position) const
 {
-	int32 Row = FMath::FloorToInt(WorldLocation.X/TileSize);
-	int32 Column = FMath::FloorToInt(WorldLocation.Y/TileSize);
-	return FVector2D(Row, Column);
+	if(Position.X > 0 && Position.X < Rows && Position.Y > 0 && Position.Y < Columns)
+		return true;
+
+	return false;
+}
+
+// Entity interaction
+void AGridManager::UpdateEntityPosition(AActor* Entity, FIntPoint OldPosition, FIntPoint NewPosition)
+{
+	if(OccupiedTiles.Contains(OldPosition))
+	{
+		OccupiedTiles.Remove(OldPosition);
+	}
+	OccupiedTiles.Add(NewPosition, Entity);
+	DrawDebugGrid();
+}
+
+bool AGridManager::isTileOccupiedByEntity(FIntPoint Position)
+{
+	return OccupiedTiles.Contains(Position);
+}
+
+AActor* AGridManager::GetActorAtTilePosition(FIntPoint Position)
+{
+	return OccupiedTiles.FindRef(Position);
 }
 
 //**************
@@ -123,13 +183,16 @@ void AGridManager::ConstructDebugGrid(TArray<TArray<char>>& GridVisuals)
 			//	SetTileState(FIntPoint(Row, Column), true);
 			//}
 			GridVisuals[Row][Column] = Grid[Row][Column].bIsBlocked ? 'X' : '.';
+
+			if(isTileOccupiedByEntity(FIntPoint(Row, Column)))
+			{
+				GridVisuals[Row][Column] = 'O';
+			}
 		}
 	}
-	// place "actors"
-	//GridVisuals[2][6] = 'O';
 }
 
-void AGridManager::PrintDebugGrid(TArray<TArray<char>>& GridVisuals)
+void AGridManager::PrintDebugGrid(TArray<TArray<char>>& GridVisuals) const
 {
 	for(int32 Row = 0; Row < Rows; Row++)
 	{

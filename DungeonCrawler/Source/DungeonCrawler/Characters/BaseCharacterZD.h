@@ -6,6 +6,8 @@
 #include "PaperZDCharacter.h"
 #include "BaseCharacterZD.generated.h"
 
+class AGridManager;
+
 UCLASS()
 class DUNGEONCRAWLER_API ABaseCharacterZD : public APaperZDCharacter
 {
@@ -29,4 +31,7 @@ public:
 	void SetPosition(FIntPoint Position);
 private:
 	FIntPoint CurrentPosition;
+
+	UPROPERTY()
+	AGridManager* GridManager;
 };

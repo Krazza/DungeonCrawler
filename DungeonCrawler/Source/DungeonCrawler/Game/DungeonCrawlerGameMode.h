@@ -7,6 +7,8 @@
 #include "DungeonCrawlerGameMode.generated.h"
 
 class ABaseCharacterZD;
+class ADCPlayerController;
+class ADungeonCrawlerGameState;
 
 UCLASS()
 class DUNGEONCRAWLER_API ADungeonCrawlerGameMode : public AGameModeBase
@@ -15,10 +17,10 @@ class DUNGEONCRAWLER_API ADungeonCrawlerGameMode : public AGameModeBase
 public:
 	ADungeonCrawlerGameMode();
 	virtual void BeginPlay() override;
+	virtual void PositionPlayerCharacter();
 protected:
 	virtual void InitGameState() override;
-	virtual void PositionPlayerCharacter();
-
+	
 	UFUNCTION(BlueprintNativeEvent, Category = "Grid")
 	void OnGridManagerInitialized();
 	virtual void OnGridManagerInitialized_Implementation();
@@ -26,4 +28,10 @@ protected:
 private:
 	UPROPERTY()
 	ABaseCharacterZD* PlayerCharacterZD;
+
+	UPROPERTY()
+	ADungeonCrawlerGameState* DungeonGameState;
+
+	UPROPERTY()
+	ADCPlayerController* PlayerController;
 };

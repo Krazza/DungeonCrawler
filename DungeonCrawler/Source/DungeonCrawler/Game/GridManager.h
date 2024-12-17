@@ -8,8 +8,6 @@
 
 class UPaperTileMap;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGridManagerInitialized);
-
 UCLASS()
 class DUNGEONCRAWLER_API AGridManager : public AActor
 {
@@ -19,41 +17,89 @@ public:
 	AGridManager();
 	
 	virtual void BeginPlay() override;
+
+	// **************
+	// 
+	// **************
 	
 	UFUNCTION(BlueprintCallable, Category="Grid")
 	void InitializeGrid(int32 InRows, int32 InColumns, float InTileSize);
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
-	bool IsTileBlocked(int32 Row, int32 Column) const;
+	void SetTileState(FIntPoint TilePosition, bool bIsBlocked);
+	
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	bool IsTileBlocked(FIntPoint Position) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	void UpdateGridBasedOnTileMap(UPaperTileMap* TileMap, const TArray<int32>& ImmovableObstacleIDs);
 	
+	// *****************
+	// 
+	// *****************
+	
 	UFUNCTION(BlueprintCallable, Category = "Grid")
-	void SetTileState(FIntPoint TilePosition, bool bIsBlocked);
+	FIntPoint WorldToGridPosition(const FVector& WorldLocation) const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	FVector GridToWorldPosition(const FIntPoint& GridLocation, bool bIsCenter) const;
 
-	UPROPERTY(BlueprintAssignable, Category="Grid")
-	FOnGridManagerInitialized OnGridManagerInitialized;
+	// ****************
+	// 
+	// ****************
+	
+	
 
-	//Level DA origin
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	bool IsTileValid(FIntPoint Position) const;
+	
+	
+	
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	float GetGridHeight() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	float GetGridWidth() const;
+
+	// ******************
+	// Entity interaction
+	// ******************
+	
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	void UpdateEntityPosition(AActor* Entity, FIntPoint OldPosition, FIntPoint NewPosition);
+
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	bool isTileOccupiedByEntity(FIntPoint Position);
+
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	AActor* GetActorAtTilePosition(FIntPoint Position);
+
+	// ********************
+	// Data from DataAssets
+	// ********************
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	int32 Rows;
-	//Level DA origin
+
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	int32 Columns;
-	//Level DA origin
+
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	float TileSize;
+
 private:
 	
 	TArray<TArray<FTileInfo>> Grid;
+	
+	UPROPERTY()
+	TMap<FIntPoint, AActor*> OccupiedTiles;
 
-	FVector2D WorldToGridPosition(const FVector& WorldLocation) const;
-
+	// *************
 	// -== DEBUG ==-
-
-	// Console Grid
+	// *************
+	
+	// Draw console grid
 	void DrawDebugGrid();
 	void ConstructDebugGrid(TArray<TArray<char>>& GridVisuals);
-	void PrintDebugGrid(TArray<TArray<char>>& GridVisuals);
+	void PrintDebugGrid(TArray<TArray<char>>& GridVisuals) const;
 };

@@ -10,6 +10,8 @@ class AGridManager;
 class UPaperTileMap;
 class UULevelSettings;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGridManagerInitialized);
+
 UCLASS()
 class DUNGEONCRAWLER_API ADungeonCrawlerGameState : public AGameStateBase
 {
@@ -21,6 +23,9 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void InitializeGridSettings(UULevelSettings* LevelSettingsDataAsset);
+
+	UPROPERTY(BlueprintAssignable, Category="Grid")
+	FOnGridManagerInitialized OnGridManagerInitialized;
 	
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	AGridManager* GetGridManager() const;
@@ -52,7 +57,7 @@ public:
 protected:
 	// Used to spawn the procedural mesh for Grid in editor visualization
 	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
-	void OnGridManagerInitialized();
+	void HandleGridManagerInitialized();
 private:
 	UPROPERTY()
 	AGridManager* GridManager;
