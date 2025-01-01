@@ -14,6 +14,9 @@ ABaseCharacterZD::ABaseCharacterZD()
 	PrimaryActorTick.bCanEverTick = true;
 	GridManager = nullptr;
 	CurrentPosition = FIntPoint(0,0);
+	Initiative = 1;
+	MaxActions = 1;
+	RemainingActions = 0;
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +52,7 @@ void ABaseCharacterZD::Move(FIntPoint Direction, int Steps)
 			GridManager->UpdateEntityPosition(this, CurrentPosition, newPosition);
 			CurrentPosition = newPosition;
 		}
+		UseAction();
 	}
 	
 }
@@ -74,9 +78,22 @@ void ABaseCharacterZD::SetPosition(FIntPoint Position)
 	CurrentPosition = Position;
 	UE_LOG(LogTemp, Warning, TEXT("Setting position: %d, %d"), Position.X, Position.Y);
 	UE_LOG(LogTemp, Warning, TEXT("Setting position: %f, %f, %f"), newWorldPosition.X, newWorldPosition.Y, newWorldPosition.Z);
-	//continue here
-	//update grid state (initial)
-	//bind player input
-	//move character
-	//update grid state (OnMove) //event?
+}
+
+void ABaseCharacterZD::StartTurn()
+{
+	RemainingActions = MaxActions;
+}
+
+void ABaseCharacterZD::UseAction()
+{
+	if(RemainingActions > 0)
+	{
+		RemainingActions--;
+	}
+}
+
+bool ABaseCharacterZD::CanAct() const
+{
+	return RemainingActions > 0;
 }

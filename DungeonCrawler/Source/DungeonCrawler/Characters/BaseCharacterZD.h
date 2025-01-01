@@ -29,6 +29,24 @@ public:
 
 	// For StartingPosition() and alike
 	void SetPosition(FIntPoint Position);
+
+	// ***************
+	// Turn Management
+	// ***************
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Turn System")
+	int32 Initiative;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn System")
+	int32 MaxActions;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn System")
+	int32 RemainingActions;
+
+	void StartTurn();
+	void UseAction();
+	bool CanAct() const;
+
 private:
 	FIntPoint CurrentPosition;
 

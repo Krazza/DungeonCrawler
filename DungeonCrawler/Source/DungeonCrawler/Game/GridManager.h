@@ -53,8 +53,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	bool IsTileValid(FIntPoint Position) const;
 	
-	
-	
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	float GetGridHeight() const;
 

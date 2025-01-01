@@ -9,6 +9,7 @@
 class AGridManager;
 class UPaperTileMap;
 class UULevelSettings;
+class ATurnManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGridManagerInitialized);
 
@@ -32,10 +33,10 @@ public:
 	//Grid parameters 
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	UPaperTileMap* TileMap;
-	//(number of rows and columns) have to be identical to TileMap parameters
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	int32 Rows;
-	//(number of rows and columns) have to be identical to TileMap parameters
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	int32 Columns;
 
