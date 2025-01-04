@@ -26,7 +26,7 @@ class DUNGEONCRAWLER_API UTurnManager : public UObject
 public:
 	UTurnManager();
 
-	void InitializeTurnManager(ABaseCharacterZD* PlayerCharacter, ADCPlayerController* PlayerController);
+	void InitializeTurnManagerData(ABaseCharacterZD* PlayerCharacter, ADCPlayerController* PlayerController);
 	void InitializeTurnOrder(const TArray<AActor*>& Participants);
 	void StartNextTurn();
 	void EndTurn();
@@ -53,9 +53,15 @@ protected:
 	void ProcessTurn(AActor* CurrentActor);
 	void EnablePlayerInput();
 	void DisablePlayerInput();
-
 	void ProcessEnemyTurn();
 
+	// Event to register a performed Action
+	UFUNCTION()
+	void OnActorActionComplete();
+
+	// Event to register a finished Turn
+	UFUNCTION()
+	void OnActorTurnComplete();
 private:
 	
 	UPROPERTY()
@@ -66,6 +72,8 @@ private:
 	
 };
 // create turn manager in game state
+// Gather Participants
+// InitializeTurnManager
 // InitializeTurnOrder
 // StartNextTurn
 // Check: 1. Turn progression, 2. Doesn't crash and burn

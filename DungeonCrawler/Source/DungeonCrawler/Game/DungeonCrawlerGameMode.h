@@ -20,11 +20,12 @@ public:
 	virtual void PositionPlayerCharacter();
 protected:
 	virtual void InitGameState() override;
+
+	virtual void StartGame();
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Grid")
 	void OnGridManagerInitialized();
 	virtual void OnGridManagerInitialized_Implementation();
-	
 private:
 	UPROPERTY()
 	ABaseCharacterZD* PlayerCharacterZD;

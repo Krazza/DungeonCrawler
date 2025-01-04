@@ -1,5 +1,6 @@
 ﻿#include "TurnManager.h"
 #include "DCPlayerController.h"
+#include "DungeonCrawler/Utility/TurnBasedActor.h"
 #include "DungeonCrawler/Characters/BaseCharacterZD.h"
 
 UTurnManager::UTurnManager()
@@ -10,7 +11,7 @@ UTurnManager::UTurnManager()
 	PlayerCharacterZD = nullptr;
 }
 
-void UTurnManager::InitializeTurnManager(ABaseCharacterZD* PlayerCharacter, ADCPlayerController* PlayerController)
+void UTurnManager::InitializeTurnManagerData(ABaseCharacterZD* PlayerCharacter, ADCPlayerController* PlayerController)
 {
 	if(PlayerCharacter)
 	{
@@ -28,14 +29,14 @@ void UTurnManager::InitializeTurnOrder(const TArray<AActor*>& Participants)
 	TurnOrder.Empty();
 	TurnOrder = Participants;
 
-	TurnOrder.Sort([](const TArray<AActor*>& A, const TArray<AActor*>& B)
+	TurnOrder.Sort([](const AActor& A, const AActor& B)
 	{
-		const ABaseCharacterZD* CharacterA = Cast<ABaseCharacterZD>(&A);
-		const ABaseCharacterZD* CharacterB = Cast<ABaseCharacterZD>(&B);
+		const ITurnBasedActor* TurnBasedActorA = Cast<ITurnBasedActor>(&A);
+		const ITurnBasedActor* TurnBasedActorB = Cast<ITurnBasedActor>(&B);
 
-		if(CharacterA && CharacterB)
+		if(TurnBasedActorA && TurnBasedActorB)
 		{
-			return CharacterA->Initiative > CharacterB->Initiative;
+			return TurnBasedActorA->GetInitiative() > TurnBasedActorB->GetInitiative();
 		}
 		
 		return false;
@@ -55,6 +56,8 @@ void UTurnManager::StartNextTurn()
 	CurrentTurnState = (Cast<ADCPlayerController>(CurrentActor->GetOwner()) != nullptr)
 	? EGameTurnState::TurnEnd : EGameTurnState::TurnStart;
 	
+	UE_LOG(LogTemp, Display, TEXT("Turn Started."));
+	
 	ProcessTurn(CurrentActor);
 }
 
@@ -62,6 +65,7 @@ void UTurnManager::EndTurn()
 {
 	CurrentTurnState = EGameTurnState::TurnEnd;
 	StartNextTurn();
+	UE_LOG(LogTemp, Display, TEXT("Turn Ended."));
 }
 
 TArray<AActor*> UTurnManager::GetTurnOrder()
@@ -85,31 +89,22 @@ EGameTurnState UTurnManager::GetCurrentTurnState() const
 
 void UTurnManager::ProcessTurn(AActor* CurrentActor)
 {
-	ABaseCharacterZD* Character = Cast<ABaseCharacterZD>(CurrentActor);
+	ITurnBasedActor* TurnBasedActor = Cast<ITurnBasedActor>(CurrentActor);
 
-	if(Character)
+	if(TurnBasedActor)
 	{
-		if(Character->IsPlayerControlled())
-		{
-			EnablePlayerInput();
-		}
-		else
-		{
-			DisablePlayerInput();
-			ProcessEnemyTurn();
-		}
-
-		while(Character->CanAct())
-		{
-			
-		}
-
-		UE_LOG(LogTemp, Warning, TEXT("Action made"));
+		//if player, enable input
+		//if not, disable input
+		TurnBasedActor->StartTurn();
+		//TurnBasedActor->OnActionComplete().AddDynamic(this, &UTurnManager::OnActorActionComplete);
+		TurnBasedActor->OnTurnComplete().AddDynamic(this, &UTurnManager::OnActorTurnComplete);
 		
-		if(!Character->CanAct())
-		{
-			EndTurn();
-		}
+		UE_LOG(LogTemp, Display, TEXT("Turn Processed."));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Actor does not implement ITurnBasedActor interface."));
+		EndTurn();
 	}
 }
 
@@ -135,4 +130,28 @@ void UTurnManager::ProcessEnemyTurn()
 {
 	// AIbehaviorTree-> Switch keys -> Do some wild shit();
 	UE_LOG(LogTemp, Display, TEXT("Processing Enemy Turn"));
+}
+
+void UTurnManager::OnActorActionComplete()
+{
+	ITurnBasedActor* CurrentTurnActor = Cast<ITurnBasedActor>(GetCurrentActor());
+
+	if(CurrentTurnActor)
+	{
+		// Action specific behavior
+		//CurrentTurnActor->OnActionComplete().RemoveDynamic(this, &UTurnManager::OnActorActionComplete);
+	}
+}
+
+void UTurnManager::OnActorTurnComplete()
+{
+	ITurnBasedActor* CurrentTurnActor = Cast<ITurnBasedActor>(GetCurrentActor());
+
+	if(CurrentTurnActor)
+	{
+		// if player, disable input
+		CurrentTurnActor->OnTurnComplete().RemoveDynamic(this, &UTurnManager::OnActorTurnComplete);
+	}
+
+	EndTurn();
 }

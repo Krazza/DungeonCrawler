@@ -3,7 +3,9 @@
 #include "DungeonCrawlerGameMode.h"
 #include "DungeonCrawlerGameState.h"
 #include "DCPlayerController.h"
+#include "EngineUtils.h"
 #include "GridManager.h"
+#include "TurnManager.h"
 #include "DungeonCrawler/Characters/BaseCharacterZD.h"
 #include "DungeonCrawler/Utility/DungeonLevelScriptActor.h"
 
@@ -18,7 +20,8 @@ void ADungeonCrawlerGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerController = Cast<ADCPlayerController>(GetWorld()->GetFirstPlayerController());
-	DungeonGameState->OnGridManagerInitialized.AddDynamic(this, &ADungeonCrawlerGameMode::OnGridManagerInitialized);
+
+	StartGame();
 }
 
 void ADungeonCrawlerGameMode::InitGameState()
@@ -27,13 +30,57 @@ void ADungeonCrawlerGameMode::InitGameState()
 
 	ADungeonLevelScriptActor* DungeonLevelScriptActor = Cast<ADungeonLevelScriptActor>(GetWorld()->GetLevelScriptActor());
 
-	if (DungeonLevelScriptActor && DungeonLevelScriptActor->LevelSettings)
+	DungeonGameState = GetGameState<ADungeonCrawlerGameState>();
+	if(DungeonGameState)
 	{
-		DungeonGameState = GetGameState<ADungeonCrawlerGameState>();
-		if (DungeonGameState)
+		if (DungeonLevelScriptActor && DungeonLevelScriptActor->LevelSettings)
 		{
 			DungeonGameState->InitializeGridSettings(DungeonLevelScriptActor->LevelSettings);
 		}
+		DungeonGameState->CreateTurnManager();
+	}
+}
+
+void ADungeonCrawlerGameMode::StartGame()
+{
+	// Prepare Grid related stuff
+	if(DungeonGameState)
+	{
+		DungeonGameState->OnGridManagerInitialized.AddDynamic(this, &ADungeonCrawlerGameMode::OnGridManagerInitialized);
+	}
+	
+	// Initiate TurnManager
+	if(DungeonGameState && DungeonGameState->GetTurnManager())
+	{
+		TArray<AActor*> Participants;
+
+		for(TActorIterator<AActor> It(GetWorld()); It; ++It)
+		{
+			AActor* Actor = *It;
+			if(Actor->Tags.Contains("TurnBased"))
+			{
+				Participants.Add(Actor);
+			}
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("Participant number: %u"), Participants.Num());
+		
+		// REFACTOR
+		if(!PlayerCharacterZD)
+		{
+			if(PlayerController)
+			{
+				PlayerCharacterZD = Cast<ABaseCharacterZD>(PlayerController->GetPawn());
+			}
+		}
+		
+		DungeonGameState->GetTurnManager()->InitializeTurnManagerData(PlayerCharacterZD, PlayerController);
+		DungeonGameState->GetTurnManager()->InitializeTurnOrder(Participants);
+		DungeonGameState->GetTurnManager()->StartNextTurn();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Turn Manager Initialized"));
 	}
 }
 
@@ -41,7 +88,8 @@ void ADungeonCrawlerGameMode::PositionPlayerCharacter()
 {
 	if(!GetWorld())
 		return;
-	
+
+	// REFACTOR
 	if(!PlayerCharacterZD)
 	{
 		if(PlayerController)

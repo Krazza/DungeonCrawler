@@ -9,7 +9,7 @@
 class AGridManager;
 class UPaperTileMap;
 class UULevelSettings;
-class ATurnManager;
+class UTurnManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGridManagerInitialized);
 
@@ -22,6 +22,7 @@ public:
 	ADungeonCrawlerGameState();
 	
 	virtual void BeginPlay() override;
+	void CreateTurnManager();
 
 	virtual void InitializeGridSettings(UULevelSettings* LevelSettingsDataAsset);
 
@@ -55,10 +56,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Level")
 	FIntPoint LevelExitTile;
 
+	UFUNCTION(BlueprintCallable, Category = "Turn System")
+	UTurnManager* GetTurnManager() const { return TurnManager; }
 protected:
 	// Used to spawn the procedural mesh for Grid in editor visualization
 	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
 	void HandleGridManagerInitialized();
+
+	UPROPERTY()
+	UTurnManager* TurnManager;
 private:
 	UPROPERTY()
 	AGridManager* GridManager;

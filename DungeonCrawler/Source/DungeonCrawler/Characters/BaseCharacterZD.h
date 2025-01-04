@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "PaperZDCharacter.h"
+#include "DungeonCrawler/Utility/TurnBasedActor.h"
+#include "DungeonCrawler/Components/TurnBasedComponent.h"
 #include "BaseCharacterZD.generated.h"
 
 class AGridManager;
 
 UCLASS()
-class DUNGEONCRAWLER_API ABaseCharacterZD : public APaperZDCharacter
+class DUNGEONCRAWLER_API ABaseCharacterZD : public APaperZDCharacter, public ITurnBasedActor
 {
 	GENERATED_BODY()
 
@@ -31,25 +33,39 @@ public:
 	void SetPosition(FIntPoint Position);
 
 	// ***************
-	// Turn Management
+	// ITurnBasedActor Interface
 	// ***************
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Turn System")
-	int32 Initiative;
+	virtual int32 GetInitiative() const override { return TurnBasedComponent->Initiative; }
+	virtual int32 GetMaxActions() const override { return TurnBasedComponent->MaxActions; }
+	virtual int32 GetRemainingActions() const override { return TurnBasedComponent->RemainingActions; }
+	virtual void SetRemainingActions(int32 Actions) override { TurnBasedComponent->RemainingActions = Actions; }
+	virtual void StartTurn() override { TurnBasedComponent-> ResetActions(); }
+	virtual void UseAction() override;
+	virtual bool CanAct() const override { return TurnBasedComponent->CanAct(); }
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn System")
-	int32 MaxActions;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn System")
-	int32 RemainingActions;
-
-	void StartTurn();
-	void UseAction();
-	bool CanAct() const;
-
+	// Communicating the completion of an Action to the Turn Manager, ITurnBasedActor interface origin
+	virtual FTurnActionCompleteDelegate& OnActionComplete() override { return TurnActionCompleteDelegate; }
+	
+	// Communicating the completion of a Turn to the Turn Manager, ITurnBasedActor interface origin
+	virtual FTurnCompleteDelegate& OnTurnComplete() override { return TurnCompleteDelegate; }
 private:
 	FIntPoint CurrentPosition;
 
 	UPROPERTY()
 	AGridManager* GridManager;
+
+	UPROPERTY(BlueprintAssignable, Category = "Turn System")
+	FTurnActionCompleteDelegate TurnActionCompleteDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Turn System")
+	FTurnCompleteDelegate TurnCompleteDelegate;
+
+	// ***************
+	// UTurnBasedComponent
+	// ***************
+
+	// Stores Owner's Turn System related data
+	UPROPERTY(EditDefaultsOnly, Instanced, Category="Turn System")
+	UTurnBasedComponent* TurnBasedComponent;
 };

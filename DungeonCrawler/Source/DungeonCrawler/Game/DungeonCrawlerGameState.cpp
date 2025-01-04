@@ -4,6 +4,7 @@
 #include "DungeonCrawlerGameState.h"
 #include "PaperTileMap.h"
 #include "GridManager.h"
+#include "TurnManager.h"
 #include "DungeonCrawler/Utility/ULevelSettings.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -16,7 +17,9 @@ ADungeonCrawlerGameState::ADungeonCrawlerGameState()
 	ImmovableObstacleIDs(),
 	PlayerStartTile(1,1),
 	LevelExitTile(18, 18),
+	TurnManager(nullptr),
 	GridManager(nullptr)
+
 {
 	
 }
@@ -25,6 +28,12 @@ void ADungeonCrawlerGameState::BeginPlay()
 {
 	Super::BeginPlay();
 	OnGridManagerInitialized.Broadcast();
+}
+
+void ADungeonCrawlerGameState::CreateTurnManager()
+{
+	if(TurnManager == nullptr)
+		TurnManager = NewObject<UTurnManager>(this);
 }
 
 void ADungeonCrawlerGameState::InitializeGridSettings(UULevelSettings* LevelSettingsDataAsset)
@@ -42,6 +51,7 @@ void ADungeonCrawlerGameState::InitializeGridSettings(UULevelSettings* LevelSett
 	LevelExitTile = LevelSettingsDataAsset->LevelSettings.LevelExitTile;
 
 	InitializeGridManager();
+	CreateTurnManager();
 }
 
 void ADungeonCrawlerGameState::InitializeGridManager()
