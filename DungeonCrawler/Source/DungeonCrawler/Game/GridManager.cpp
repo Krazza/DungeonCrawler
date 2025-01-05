@@ -5,6 +5,7 @@
 #include "IPropertyTable.h"
 #include "PaperTileLayer.h"
 #include "PaperTileMap.h"
+#include "DungeonCrawler/Utility/FAStarNode.h"
 #include "Kismet/GameplayStatics.h"
 
 AGridManager::AGridManager()
@@ -41,6 +42,7 @@ void AGridManager::InitializeGrid(int32 InRows, int32 InColumns, float InTileSiz
 
 void AGridManager::SetTileState(FIntPoint TilePosition, bool bIsBlocked)
 {
+	//Tilemaps in unreal go (Y, X) or some shit
 	//TilePosition.X corresponds to the row (Y-axis)
 	//TilePosition.Y corresponds to the column (X-axis)
 	if(TilePosition.X >= 0 && TilePosition.X < Rows && TilePosition.Y >= 0 && TilePosition.Y < Columns)
@@ -157,6 +159,109 @@ AActor* AGridManager::GetActorAtTilePosition(FIntPoint Position)
 	return OccupiedTiles.FindRef(Position);
 }
 
+TArray<FIntPoint> AGridManager::FindPath(const FIntPoint& Start, const FIntPoint& Goal)
+{
+	if(!IsTileValid(Start) || !IsTileValid(Goal) || IsTileBlocked(Start) || IsTileBlocked(Goal))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid Start or Goal Tile"));
+		return TArray<FIntPoint>();
+	}
+
+	TSet<FIntPoint> OpenSet;
+	TSet<FIntPoint> ClosedSet;
+	TMap<FIntPoint, FAStarNode*> NodeMap;
+
+	FAStarNode* StartNode = new FAStarNode(Start, 0.f, CalculateManhattanDistance(Start, Goal));
+	OpenSet.Add(Start);
+	NodeMap.Add(Start, StartNode);
+
+	while(OpenSet.Num() > 0)
+	{
+		//Finding the node with the lowest cost (F)
+		FAStarNode* CurrentNode = nullptr;
+		for(FIntPoint NodePosition : OpenSet)
+		{
+			if(!CurrentNode || NodeMap[NodePosition]->FScore < CurrentNode->FScore)
+			{
+				CurrentNode = NodeMap[NodePosition];
+			}
+		}
+		//Builds the path if the goal was reached
+		if(CurrentNode->Position == Goal)
+		{
+			TArray<FIntPoint> Path;
+			while(CurrentNode)
+			{
+				Path.Add(CurrentNode->Position);
+				CurrentNode = CurrentNode->Parent;
+			}
+			Algo::Reverse(Path);
+			// DEBUG
+			DrawDebugPath(Path);
+			return Path;
+		}
+		//updating the lists
+		OpenSet.Remove(CurrentNode->Position);
+		ClosedSet.Add(CurrentNode->Position);
+
+		//explore neighbors
+		TArray<FIntPoint> Neighbors = GetTileNeighbors(CurrentNode->Position);
+		for(FIntPoint Neighbor : Neighbors)
+		{
+			if(ClosedSet.Contains(Neighbor) || IsTileBlocked(Neighbor))
+				continue;
+
+			float GScore = CurrentNode->GScore + 1;//uniform cost
+
+			// To get a custom cost we need to:
+			// 1. address the Grid<FTileInfo>[]
+			// 2. check the tile type/active effects/etc.
+			// 3. translate tile state into a cost
+			// 4. update GScore here
+
+			
+			if(!OpenSet.Contains(Neighbor))
+			{
+				float HScore = CalculateManhattanDistance(Neighbor, Goal);
+				FAStarNode* NeighborNode = new FAStarNode(Neighbor, GScore, HScore, CurrentNode);
+				OpenSet.Add(Neighbor);
+				NodeMap.Add(Neighbor, NeighborNode);
+			}
+			else if (GScore < NodeMap[Neighbor]->GScore)
+			{
+				FAStarNode* NeighborNode = NodeMap[Neighbor];
+				NeighborNode->GScore = GScore;
+				NeighborNode->FScore = GScore + NeighborNode->HScore;
+				NeighborNode->Parent = CurrentNode;
+			}
+		}
+	}
+
+	for(auto& Pair : NodeMap)
+	{
+		delete Pair.Value;
+	}
+	return {};
+}
+
+TArray<FIntPoint> AGridManager::GetTileNeighbors(const FIntPoint& Position) const
+{
+	TArray<FIntPoint> Neighbors;
+
+	TArray<FIntPoint> Directions =
+		{FIntPoint(-1, 0), FIntPoint(1, 0), FIntPoint(0, 1), FIntPoint(0, -1)};
+
+	for(const FIntPoint& Dir : Directions)
+	{
+		FIntPoint Neighbor = Position + Dir;
+		if(IsTileValid(Neighbor) && !IsTileBlocked(Neighbor))
+		{
+			Neighbors.Add(Neighbor);
+		}
+	}
+	return Neighbors;
+}
+
 //**************
 // -== DEBUG ==-
 //**************
@@ -202,5 +307,20 @@ void AGridManager::PrintDebugGrid(TArray<TArray<char>>& GridVisuals) const
 			RowString.AppendChar(GridVisuals[Row][Column]);
 		}
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *RowString);
+	}
+}
+
+float AGridManager::CalculateManhattanDistance(const FIntPoint& Start, const FIntPoint& Goal)
+{
+	return FMath::Abs(Start.X - Goal.X) + FMath::Abs(Start.Y - Goal.Y);
+}
+
+void AGridManager::DrawDebugPath(const TArray<FIntPoint>& Path)
+{
+	for(int32 i = 0; i < Path.Num() - 1; ++i)
+	{
+		FVector Start = GridToWorldPosition(Path[i], true);
+		FVector End = GridToWorldPosition(Path[i + 1], true);
+		DrawDebugLine(GetWorld(), Start, End, FColor::Green, true);
 	}
 }

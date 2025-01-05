@@ -22,6 +22,7 @@ void ADungeonCrawlerGameMode::BeginPlay()
 	PlayerController = Cast<ADCPlayerController>(GetWorld()->GetFirstPlayerController());
 
 	StartGame();
+	DungeonGameState->GetGridManager()->FindPath(FIntPoint(1, 1), FIntPoint(3, 6));
 }
 
 void ADungeonCrawlerGameMode::InitGameState()

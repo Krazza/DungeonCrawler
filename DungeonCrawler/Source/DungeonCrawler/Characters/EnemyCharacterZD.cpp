@@ -9,6 +9,7 @@ AEnemyCharacterZD::AEnemyCharacterZD()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	AIState = EAIState::Idle;
 }
 
 // Called when the game starts or when spawned
@@ -24,9 +25,7 @@ void AEnemyCharacterZD::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-// Called to bind functionality to input
-void AEnemyCharacterZD::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AEnemyCharacterZD::SetAIState(EAIState NewState)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	AIState = NewState;
 }
-

@@ -72,6 +72,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	AActor* GetActorAtTilePosition(FIntPoint Position);
 
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	TArray<FIntPoint> FindPath(const FIntPoint& Start, const FIntPoint& Goal);
+
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	TArray<FIntPoint> GetTileNeighbors(const FIntPoint& Position) const;
 	// ********************
 	// Data from DataAssets
 	// ********************
@@ -100,4 +105,8 @@ private:
 	void DrawDebugGrid();
 	void ConstructDebugGrid(TArray<TArray<char>>& GridVisuals);
 	void PrintDebugGrid(TArray<TArray<char>>& GridVisuals) const;
+
+	// A* debug/helpers
+	float CalculateManhattanDistance(const FIntPoint& Start, const FIntPoint& Goal);
+	void DrawDebugPath(const TArray<FIntPoint>& Path);
 };

@@ -6,6 +6,14 @@
 #include "BaseCharacterZD.h"
 #include "EnemyCharacterZD.generated.h"
 
+UENUM(BlueprintType)
+enum class EAIState : uint8
+{
+	Idle,
+	Patrol,
+	Chase,
+};
+
 UCLASS()
 class DUNGEONCRAWLER_API AEnemyCharacterZD : public ABaseCharacterZD
 {
@@ -23,6 +31,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void SetAIState(EAIState NewState);
+
+private:
+	UPROPERTY()
+	EAIState AIState;
 };
