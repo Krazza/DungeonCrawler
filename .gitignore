@@ -6,3 +6,23 @@
 **/WindowsNoEditor/*
 **/Windows/*
 **/DerivedDataCache/*
+
+# Personal User Settings
+*.suo
+*.user
+*.userprefs
+*.VC.db
+*.VC.opendb
+
+# Config Exclusions
+**/Config/DefaultEditor.ini
+**/Config/DefaultEditorUserSettings.ini
+
+# Crash Reports
+**/CrashReportClient/*
+
+# Optional Exclusions
+**/Saved/Logs/*
+**/Saved/Backup/*
+**/Saved/Autosaves/*
+**/Saved/Config/WindowsEditor/GameUserSettings.ini
