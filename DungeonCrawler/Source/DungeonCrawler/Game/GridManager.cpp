@@ -67,7 +67,7 @@ void AGridManager::UpdateGridBasedOnTileMap(UPaperTileMap* TileMap, const TArray
 		UE_LOG(LogTemp, Error, TEXT("TileMap is NULL"));
 		return;
 	}
-	
+
 	for (UPaperTileLayer* layer : TileMap->TileLayers)
 	{
 		if(layer->LayerName.ToString().Equals(TEXT("Walls")))//swap for a string variable?

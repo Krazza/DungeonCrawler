@@ -23,4 +23,4 @@ void ADungeonLevelScriptActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
+// DEPRECATED

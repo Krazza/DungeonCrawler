@@ -5,6 +5,7 @@
 #include "Containers/Array.h"
 #include "FLevelSettings.generated.h"
 
+// DEPRECATED
 USTRUCT(BlueprintType)
 struct FLevelSettings
 {
@@ -27,10 +28,11 @@ struct FLevelSettings
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Level")
 	TArray<int32> ImmovableObstacleIDs;
-
+	
+	// DEPRECATED
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Level")
 	FIntPoint PlayerStartTile;
-
+	// DEPRECATED
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Level")
 	FIntPoint LevelExitTile;
 
@@ -44,3 +46,5 @@ struct FLevelSettings
 	LevelExitTile(18, 18)
 	{}
 };
+
+// create data containers according to the lists (paper)

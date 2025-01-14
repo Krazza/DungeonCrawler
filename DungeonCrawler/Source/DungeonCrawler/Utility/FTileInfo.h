@@ -10,8 +10,9 @@ struct FTileInfo
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsBlocked;
-
+	
 	FTileInfo()
-		: bIsBlocked(false)
+		:
+	bIsBlocked(false)
 	{}
 };

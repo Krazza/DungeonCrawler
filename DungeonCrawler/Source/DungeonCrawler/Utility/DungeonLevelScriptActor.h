@@ -27,3 +27,4 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Level Gameplay Settings")
 	UULevelSettings* LevelSettings;
 };
+// DEPRECATED

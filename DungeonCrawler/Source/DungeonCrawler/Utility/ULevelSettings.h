@@ -19,3 +19,4 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Settings")
 	FLevelSettings LevelSettings;
 };
+// DEPRECATED
