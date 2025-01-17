@@ -9,6 +9,7 @@
 class ABaseCharacterZD;
 class ADCPlayerController;
 class ADungeonCrawlerGameState;
+class UDungeonCrawlerGameInstance;
 
 UCLASS()
 class DUNGEONCRAWLER_API ADungeonCrawlerGameMode : public AGameModeBase
@@ -26,7 +27,18 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Grid")
 	void OnGridManagerInitialized();
 	virtual void OnGridManagerInitialized_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Grid")
+	void OnEndOfLevelReached();
+	virtual void OnEndOfLevelReached_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Grid")
+	void OnLevelIndexChanged();
+	virtual void OnLevelIndexChanged_Implementation();
 private:
+	UPROPERTY()
+	UDungeonCrawlerGameInstance* GameInstance;
+	
 	UPROPERTY()
 	ABaseCharacterZD* PlayerCharacterZD;
 

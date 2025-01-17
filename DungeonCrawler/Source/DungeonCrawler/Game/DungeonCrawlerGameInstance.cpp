@@ -4,14 +4,21 @@
 #include "PaperTileLayer.h"
 #include "PaperTileMap.h"
 
+UDungeonCrawlerGameInstance::UDungeonCrawlerGameInstance()
+{
+	CurrentLevelIndex = 0;
+}
+
 void UDungeonCrawlerGameInstance::SetLevelData(FName LevelName, FLevelDataStruct LevelData)
 {
-	LevelSequence.Add(LevelName, LevelData);
-	
-	// level sequence from TM data
-	// assembling
-	// passing?
-	
+	if(LevelSequence.Contains(LevelName))
+	{
+		LevelSequence[LevelName] = LevelData;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to set LevelData, LevelSequence[%s] not found. UDungeonCrawlerGameInstance::SetLevelData"), *LevelName.ToString());
+	}
 }
 
 FName UDungeonCrawlerGameInstance::GetCurrentDungeonLevelName()
@@ -42,6 +49,15 @@ FLevelDataStruct& UDungeonCrawlerGameInstance::GetNextLevelData()
 		return LevelSequence[LevelOrder[LevelOrder.Num() - 1]];
 	}
 	return LevelSequence[LevelOrder[tempIndex]];
+}
+
+void UDungeonCrawlerGameInstance::SetCurrentLevelIndex(int32 LevelIndex)
+{
+	if(LevelIndex >= 0 && LevelIndex < LevelOrder.Num())
+	{
+		CurrentLevelIndex = LevelIndex;
+		OnLevelIndexChanged.Broadcast();
+	}
 }
 
 //void UDungeonCrawlerGameInstance::SetConnection(const FName& CurrentLevel, const FIntPoint& CurrentTile, const FName& NextLevel, const FIntPoint& NextTile)

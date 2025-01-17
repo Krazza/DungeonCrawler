@@ -51,7 +51,7 @@ void ADungeonCrawlerGameState::InitializeGridSettings(UULevelSettings* LevelSett
 	LevelExitTile = LevelSettingsDataAsset->LevelSettings.LevelExitTile;
 
 	InitializeGridManager();
-	CreateTurnManager();
+
 }
 
 void ADungeonCrawlerGameState::InitializeGridManager()

@@ -3,6 +3,7 @@
 #include "DungeonCrawlerGameMode.h"
 #include "DungeonCrawlerGameState.h"
 #include "DCPlayerController.h"
+#include "DungeonCrawlerGameInstance.h"
 #include "EngineUtils.h"
 #include "GridManager.h"
 #include "TurnManager.h"
@@ -14,6 +15,7 @@ ADungeonCrawlerGameMode::ADungeonCrawlerGameMode()
 	PlayerCharacterZD = nullptr;
 	DungeonGameState = nullptr;
 	PlayerController = nullptr;
+	GameInstance = nullptr;
 }
 
 void ADungeonCrawlerGameMode::BeginPlay()
@@ -22,6 +24,18 @@ void ADungeonCrawlerGameMode::BeginPlay()
 	PlayerController = Cast<ADCPlayerController>(GetWorld()->GetFirstPlayerController());
 
 	StartGame();
+	DungeonGameState->GetGridManager()->OnEndOfLevelReached.AddDynamic(this, &ADungeonCrawlerGameMode::OnEndOfLevelReached);
+
+	if(!GameInstance)
+	{
+		GameInstance = Cast<UDungeonCrawlerGameInstance>(GetGameInstance());
+	}
+	else
+	{
+		GameInstance->OnLevelIndexChanged.AddDynamic(this, &ADungeonCrawlerGameMode::OnLevelIndexChanged);
+	}
+	
+	
 	//DungeonGameState->GetGridManager()->FindPath(FIntPoint(1, 1), FIntPoint(3, 6));
 }
 
@@ -112,4 +126,17 @@ void ADungeonCrawlerGameMode::PositionPlayerCharacter()
 void ADungeonCrawlerGameMode::OnGridManagerInitialized_Implementation()
 {
 	PositionPlayerCharacter();
+}
+
+void ADungeonCrawlerGameMode::OnEndOfLevelReached_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("EndOfLevel reached, changing current level index."));
+	//update level index in Game Instance
+	GameInstance->SetCurrentLevelIndex(GameInstance->GetCurrentLevelIndex() + 1);
+}
+
+void ADungeonCrawlerGameMode::OnLevelIndexChanged_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Level index changed, ADungeonCrawlerGameMode::OnLevelIndexChanged"));
+	//Initiate the loading of the next level;
 }

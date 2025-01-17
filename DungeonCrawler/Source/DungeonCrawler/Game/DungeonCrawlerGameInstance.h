@@ -19,6 +19,8 @@ enum class ETileLayer : uint8
 	Invalid
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelIndexChanged);
+
 UCLASS()
 class DUNGEONCRAWLER_API UDungeonCrawlerGameInstance : public UGameInstance
 {
@@ -26,6 +28,8 @@ class DUNGEONCRAWLER_API UDungeonCrawlerGameInstance : public UGameInstance
 
 public:
 
+	UDungeonCrawlerGameInstance();
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Level Data")
 	TArray<FName> LevelOrder;
 
@@ -51,6 +55,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentLevelIndex(int32 LevelIndex);
 
+	UPROPERTY(BlueprintAssignable)
+	FOnLevelIndexChanged OnLevelIndexChanged;
 	// UFUNCTION(BlueprintCallable)
 	// void SetConnection(const FName& CurrentLevel, const FIntPoint& CurrentTile, const FName& NextLevel, const FIntPoint& NextTile);
 	//
@@ -80,7 +86,7 @@ private:
 	TMap<FName, FLevelDataStruct> LevelSequence;
 
 	UPROPERTY()
-	int32 CurrentLevelIndex = 0;
+	int32 CurrentLevelIndex;
 };
 
 inline int32 UDungeonCrawlerGameInstance::GetCurrentLevelIndex()
@@ -88,7 +94,3 @@ inline int32 UDungeonCrawlerGameInstance::GetCurrentLevelIndex()
 	return CurrentLevelIndex;
 }
 
-inline void UDungeonCrawlerGameInstance::SetCurrentLevelIndex(int32 LevelIndex)
-{
-	CurrentLevelIndex = LevelIndex;
-}

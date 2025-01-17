@@ -8,6 +8,8 @@
 
 class UPaperTileMap;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndOfLevelReached);
+
 UCLASS()
 class DUNGEONCRAWLER_API AGridManager : public AActor
 {
@@ -90,6 +92,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	float TileSize;
 
+	UPROPERTY(BlueprintAssignable, Category = "Grid")
+	FOnEndOfLevelReached OnEndOfLevelReached;
+	
 private:
 	
 	TArray<TArray<FTileInfo>> Grid;
