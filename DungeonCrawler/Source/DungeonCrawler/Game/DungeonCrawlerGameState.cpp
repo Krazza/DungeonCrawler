@@ -2,31 +2,21 @@
 
 
 #include "DungeonCrawlerGameState.h"
-#include "PaperTileMap.h"
 #include "GridManager.h"
 #include "TurnManager.h"
-#include "DungeonCrawler/Utility/ULevelSettings.h"
+#include "DungeonCrawler/Utility/FLevelDataStruct.h"
 #include "Kismet/GameplayStatics.h"
 
 ADungeonCrawlerGameState::ADungeonCrawlerGameState()
-	: TileMap(nullptr),
-	Rows(0),
-	Columns(0),
-	TileSize(0),
-	GridOffset(0, 0,0),
-	ImmovableObstacleIDs(),
-	PlayerStartTile(1,1),
-	LevelExitTile(18, 18),
-	TurnManager(nullptr),
-	GridManager(nullptr)
-
 {
-	
+	GridManager = nullptr;
+	TurnManager = nullptr;
 }
 
 void ADungeonCrawlerGameState::BeginPlay()
 {
 	Super::BeginPlay();
+	//potential problem, fix later :)
 	OnGridManagerInitialized.Broadcast();
 }
 
@@ -36,29 +26,11 @@ void ADungeonCrawlerGameState::CreateTurnManager()
 		TurnManager = NewObject<UTurnManager>(this);
 }
 
-void ADungeonCrawlerGameState::InitializeGridSettings(UULevelSettings* LevelSettingsDataAsset)
-{
-	if(!LevelSettingsDataAsset)
-		return;
-
-	TileMap = LevelSettingsDataAsset->LevelSettings.TileMap;
-	Rows = LevelSettingsDataAsset->LevelSettings.Rows;
-	Columns = LevelSettingsDataAsset->LevelSettings.Columns;
-	TileSize = LevelSettingsDataAsset->LevelSettings.TileSize;
-	GridOffset = LevelSettingsDataAsset->LevelSettings.GridOffset;
-	ImmovableObstacleIDs = LevelSettingsDataAsset->LevelSettings.ImmovableObstacleIDs;
-	PlayerStartTile = LevelSettingsDataAsset->LevelSettings.PlayerStartTile;
-	LevelExitTile = LevelSettingsDataAsset->LevelSettings.LevelExitTile;
-
-	InitializeGridManager();
-
-}
-
-void ADungeonCrawlerGameState::InitializeGridManager()
+void ADungeonCrawlerGameState::InitializeGridManager(FLevelDataStruct& LevelData)
 {
 	if(!GetWorld()) return;
-	
-	FVector SpawnLocation(GridOffset.X, GridOffset.Y, 0.f);
+	// - tilesize/2
+	FVector SpawnLocation(-LevelData.TileSize/2, -LevelData.TileSize/2, 0.f);
 	FRotator SpawnRotation(0.f, 0.f, 0.f);
 	
 	GridManager = GetWorld()->SpawnActorDeferred<AGridManager>(
@@ -71,12 +43,8 @@ void ADungeonCrawlerGameState::InitializeGridManager()
 	if(GridManager)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager created"));
-		GridManager->InitializeGrid(Rows, Columns, TileSize);
-
-		if(TileMap)
-		{
-			GridManager->UpdateGridBasedOnTileMap(TileMap, ImmovableObstacleIDs);
-		}
+		GridManager->InitializeGrid(LevelData.Rows, LevelData.Columns, LevelData.TileSize);
+		GridManager->UpdateGridBasedOnLevelData(LevelData);
 
 		UGameplayStatics::FinishSpawningActor(GridManager, FTransform(SpawnRotation, SpawnLocation));
 		OnGridManagerInitialized.AddDynamic(this, &ADungeonCrawlerGameState::HandleGridManagerInitialized);

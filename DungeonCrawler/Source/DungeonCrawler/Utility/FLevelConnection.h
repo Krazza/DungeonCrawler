@@ -12,4 +12,10 @@ struct FLevelConnection
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FIntPoint SharedTile;
+
+	FLevelConnection()
+		:
+	ConnectedLevel("nullptr"),
+	SharedTile(FIntPoint::ZeroValue)
+	{}
 };

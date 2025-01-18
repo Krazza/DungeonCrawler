@@ -6,6 +6,7 @@
 #include "DungeonCrawler/Utility/FTileInfo.h"
 #include "GridManager.generated.h"
 
+struct FLevelDataStruct;
 class UPaperTileMap;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndOfLevelReached);
@@ -34,7 +35,10 @@ public:
 	bool IsTileBlocked(FIntPoint Position) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
-	void UpdateGridBasedOnTileMap(UPaperTileMap* TileMap, const TArray<int32>& ImmovableObstacleIDs);
+	bool IsExitTile(FIntPoint Position) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	void UpdateGridBasedOnLevelData(FLevelDataStruct& LevelData);
 	
 	// *****************
 	// 

@@ -18,6 +18,9 @@ struct FLevelDataStruct
 	int32 Columns;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Data")
+	float TileSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Data")
 	FIntPoint StartingPosition;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Data")
@@ -34,6 +37,7 @@ struct FLevelDataStruct
 	LevelName("Debug"),
 	Rows(10),
 	Columns(10),
+	TileSize(160.f),
 	StartingPosition(FIntPoint::ZeroValue)
 	{}
 	//entrances

@@ -23,7 +23,10 @@ void UDungeonCrawlerGameInstance::SetLevelData(FName LevelName, FLevelDataStruct
 
 FName UDungeonCrawlerGameInstance::GetCurrentDungeonLevelName()
 {
-	return LevelOrder[CurrentLevelIndex];
+	if(CurrentLevelIndex >= 0 || CurrentLevelIndex < LevelOrder.Num())
+		return LevelOrder[CurrentLevelIndex];
+
+	return LevelOrder[0];
 }
 
 FLevelDataStruct& UDungeonCrawlerGameInstance::GetCurrentLevelData()
@@ -75,6 +78,8 @@ void UDungeonCrawlerGameInstance::CreateLevelSequence()
 		TileMap = LevelGenerationData[Key];
 		LevelSequence.Add(Key, CreateLevelDataStruct(Key, TileMap));
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Level Sequence Generated"));
+	OnLevelSequenceGenerated.Broadcast();
 }
 
 FLevelDataStruct UDungeonCrawlerGameInstance::CreateLevelDataStruct(FName LevelName, UPaperTileMap* TileMap)

@@ -1,12 +1,8 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "GridManager.h"
-
-#include "IContentBrowserSingleton.h"
-#include "IPropertyTable.h"
-#include "PaperTileLayer.h"
-#include "PaperTileMap.h"
 #include "DungeonCrawler/Utility/FAStarNode.h"
-#include "Kismet/GameplayStatics.h"
+#include "DungeonCrawler/Utility/FLevelDataStruct.h"
+
 
 AGridManager::AGridManager()
 {
@@ -60,34 +56,27 @@ bool AGridManager::IsTileBlocked(FIntPoint(Position)) const
 	return true;
 }
 
-void AGridManager::UpdateGridBasedOnTileMap(UPaperTileMap* TileMap, const TArray<int32>& ImmovableObstacleIDs)
+bool AGridManager::IsExitTile(FIntPoint Position) const
 {
-	if(!TileMap)
+	if(Position.X > 0 && Position.X < Rows && Position.Y > 0 && Position.Y < Columns)
 	{
-		UE_LOG(LogTemp, Error, TEXT("TileMap is NULL"));
-		return;
+		return Grid[Position.X][Position.Y].bIsExit;
+	}
+	return false;
+}
+
+void AGridManager::UpdateGridBasedOnLevelData(FLevelDataStruct& LevelData)
+{
+	for(FIntPoint Position : LevelData.Walls)
+	{
+		SetTileState(Position, true);
 	}
 
-	for (UPaperTileLayer* layer : TileMap->TileLayers)
+	for(FIntPoint Position : LevelData.Exits)
 	{
-		if(layer->LayerName.ToString().Equals(TEXT("Walls")))//swap for a string variable?
-		{
-			for(int32 LayerRow = 0; LayerRow < layer->GetLayerHeight(); LayerRow++)//:: WARNING :: needs to be tested with a non-square grid
-			{
-				for(int32 LayerColumn = 0; LayerColumn < layer->GetLayerWidth(); LayerColumn++)//:: WARNING :: needs to be tested with a non-square grid
-				{
-					FPaperTileInfo PaperTileInfo = layer->GetCell(LayerColumn, LayerRow);
-					if(PaperTileInfo.IsValid())
-					{
-						int32 TileIndex = PaperTileInfo.GetTileIndex();
-						SetTileState(FIntPoint(LayerRow, LayerColumn), ImmovableObstacleIDs.Contains(TileIndex));
-					}
-				}
-			}
-		}
+		// refactor to a function (?)
+		Grid[Position.X][Position.Y].bIsExit = true;
 	}
-	//DEBUG GRID VISUALIZATION
-	//DrawDebugGrid();
 }
 
 float AGridManager::GetGridHeight() const

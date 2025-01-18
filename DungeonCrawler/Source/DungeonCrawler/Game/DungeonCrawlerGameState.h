@@ -6,6 +6,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "DungeonCrawlerGameState.generated.h"
 
+struct FLevelDataStruct;
 class AGridManager;
 class UPaperTileMap;
 class UULevelSettings;
@@ -24,37 +25,14 @@ public:
 	virtual void BeginPlay() override;
 	void CreateTurnManager();
 
-	virtual void InitializeGridSettings(UULevelSettings* LevelSettingsDataAsset);
-
+	UFUNCTION(BlueprintCallable)
+	void InitializeGridManager(FLevelDataStruct& LevelData);
+	
 	UPROPERTY(BlueprintAssignable, Category="Grid")
 	FOnGridManagerInitialized OnGridManagerInitialized;
 	
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	AGridManager* GetGridManager() const;
-	//Grid parameters 
-	UPROPERTY(BlueprintReadOnly, Category = "Grid")
-	UPaperTileMap* TileMap;
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Grid")
-	int32 Rows;
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Grid")
-	int32 Columns;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Grid")
-	float TileSize;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Grid")
-	FVector GridOffset;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Grid")
-	TArray<int32> ImmovableObstacleIDs;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Level")
-	FIntPoint PlayerStartTile;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Level")
-	FIntPoint LevelExitTile;
 
 	UFUNCTION(BlueprintCallable, Category = "Turn System")
 	UTurnManager* GetTurnManager() const { return TurnManager; }
@@ -68,6 +46,4 @@ protected:
 private:
 	UPROPERTY()
 	AGridManager* GridManager;
-
-	void InitializeGridManager();
 };

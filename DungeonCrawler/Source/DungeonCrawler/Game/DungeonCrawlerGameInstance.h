@@ -20,6 +20,7 @@ enum class ETileLayer : uint8
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelIndexChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelSequenceGenerated);
 
 UCLASS()
 class DUNGEONCRAWLER_API UDungeonCrawlerGameInstance : public UGameInstance
@@ -57,6 +58,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLevelIndexChanged OnLevelIndexChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLevelSequenceGenerated OnLevelSequenceGenerated;
 	// UFUNCTION(BlueprintCallable)
 	// void SetConnection(const FName& CurrentLevel, const FIntPoint& CurrentTile, const FName& NextLevel, const FIntPoint& NextTile);
 	//
@@ -64,11 +68,11 @@ public:
 	// FLevelConnection GetConnection(const FName& CurrentLevel, const FIntPoint& CurrentTile);
 	//
 	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level Data")
-	// TMap<FName, FLevelConnection> AllLevelConnections;
-protected:
-
+	// TMap<FName, FLevelConnection> AllLevelConnections
 	UFUNCTION(BlueprintCallable)
 	void CreateLevelSequence();
+	
+protected:
 	
 	UFUNCTION(BlueprintCallable)
 	FLevelDataStruct CreateLevelDataStruct(FName LevelName, UPaperTileMap* TileMap);

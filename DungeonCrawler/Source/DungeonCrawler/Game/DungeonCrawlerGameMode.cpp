@@ -8,7 +8,7 @@
 #include "GridManager.h"
 #include "TurnManager.h"
 #include "DungeonCrawler/Characters/BaseCharacterZD.h"
-#include "DungeonCrawler/Utility/DungeonLevelScriptActor.h"
+#include "Kismet/GameplayStatics.h"
 
 ADungeonCrawlerGameMode::ADungeonCrawlerGameMode()
 {
@@ -16,43 +16,38 @@ ADungeonCrawlerGameMode::ADungeonCrawlerGameMode()
 	DungeonGameState = nullptr;
 	PlayerController = nullptr;
 	GameInstance = nullptr;
+
+	
 }
 
 void ADungeonCrawlerGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerController = Cast<ADCPlayerController>(GetWorld()->GetFirstPlayerController());
-
-	StartGame();
-	DungeonGameState->GetGridManager()->OnEndOfLevelReached.AddDynamic(this, &ADungeonCrawlerGameMode::OnEndOfLevelReached);
-
-	if(!GameInstance)
+	
+	if (DungeonGameState->GetGridManager())
 	{
-		GameInstance = Cast<UDungeonCrawlerGameInstance>(GetGameInstance());
+		StartGame();
 	}
 	else
 	{
-		GameInstance->OnLevelIndexChanged.AddDynamic(this, &ADungeonCrawlerGameMode::OnLevelIndexChanged);
+		UE_LOG(LogTemp, Warning, TEXT("Could not StartGame(), no GridManager"));
 	}
-	
-	
 	//DungeonGameState->GetGridManager()->FindPath(FIntPoint(1, 1), FIntPoint(3, 6));
 }
 
 void ADungeonCrawlerGameMode::InitGameState()
 {
 	Super::InitGameState();
-
-	ADungeonLevelScriptActor* DungeonLevelScriptActor = Cast<ADungeonLevelScriptActor>(GetWorld()->GetLevelScriptActor());
-
+	
 	DungeonGameState = GetGameState<ADungeonCrawlerGameState>();
-	if(DungeonGameState)
+	
+	GameInstance = Cast<UDungeonCrawlerGameInstance>(GetGameInstance());
+	if(GameInstance)
 	{
-		if (DungeonLevelScriptActor && DungeonLevelScriptActor->LevelSettings)
-		{
-			DungeonGameState->InitializeGridSettings(DungeonLevelScriptActor->LevelSettings);
-		}
-		DungeonGameState->CreateTurnManager();
+		GameInstance->OnLevelIndexChanged.AddDynamic(this, &ADungeonCrawlerGameMode::OnLevelIndexChanged);
+		GameInstance->OnLevelSequenceGenerated.AddDynamic(this, &ADungeonCrawlerGameMode::OnLevelSequenceGenerated);
+		GameInstance->CreateLevelSequence();
 	}
 }
 
@@ -115,7 +110,8 @@ void ADungeonCrawlerGameMode::PositionPlayerCharacter()
 	
 	if(PlayerCharacterZD)
 	{
-		PlayerCharacterZD->SetPosition(DungeonGameState->PlayerStartTile);
+		int32 randomIndex = FMath::RandRange(0, GameInstance->GetCurrentLevelData().Entrances.Num() - 1);
+		PlayerCharacterZD->SetPosition(GameInstance->GetCurrentLevelData().Entrances[randomIndex]);
 	}
 	else
 	{
@@ -126,6 +122,7 @@ void ADungeonCrawlerGameMode::PositionPlayerCharacter()
 void ADungeonCrawlerGameMode::OnGridManagerInitialized_Implementation()
 {
 	PositionPlayerCharacter();
+	DungeonGameState->GetGridManager()->OnEndOfLevelReached.AddDynamic(this, &ADungeonCrawlerGameMode::OnEndOfLevelReached);
 }
 
 void ADungeonCrawlerGameMode::OnEndOfLevelReached_Implementation()
@@ -139,4 +136,19 @@ void ADungeonCrawlerGameMode::OnLevelIndexChanged_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Level index changed, ADungeonCrawlerGameMode::OnLevelIndexChanged"));
 	//Initiate the loading of the next level;
+}
+
+void ADungeonCrawlerGameMode::OnLevelSequenceGenerated_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Game Mode reacting to level sequence generation"));
+	if(DungeonGameState && GameInstance)
+	{
+		DungeonGameState->InitializeGridManager(GameInstance->GetCurrentLevelData());
+		DungeonGameState->CreateTurnManager();
+		UE_LOG(LogTemp, Warning, TEXT("Level Sequence Generated"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("DungeonCrawlerGameMode::OnLevelSequenceGenerated()"));
+	}
 }
