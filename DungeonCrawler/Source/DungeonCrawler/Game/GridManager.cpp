@@ -41,6 +41,8 @@ void AGridManager::SetTileState(FIntPoint TilePosition, bool bIsBlocked)
 	//Tilemaps in unreal go (Y, X) or some shit
 	//TilePosition.X corresponds to the row (Y-axis)
 	//TilePosition.Y corresponds to the column (X-axis)
+
+	//change to isTileValid()
 	if(TilePosition.X >= 0 && TilePosition.X < Rows && TilePosition.Y >= 0 && TilePosition.Y < Columns)
 	{
 		Grid[TilePosition.X][TilePosition.Y].bIsBlocked = bIsBlocked;
@@ -74,8 +76,11 @@ void AGridManager::UpdateGridBasedOnLevelData(FLevelDataStruct& LevelData)
 
 	for(FIntPoint Position : LevelData.Exits)
 	{
-		// refactor to a function (?)
-		Grid[Position.X][Position.Y].bIsExit = true;
+		// //change to isTileValid()
+		if(Position.X >= 0 && Position.X < Rows && Position.Y >= 0 && Position.Y < Columns)
+		{
+			Grid[Position.X][Position.Y].bIsExit = true;
+		}
 	}
 }
 

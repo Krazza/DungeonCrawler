@@ -86,6 +86,8 @@ FLevelDataStruct UDungeonCrawlerGameInstance::CreateLevelDataStruct(FName LevelN
 {
 	FLevelDataStruct LevelDataStruct;
 	LevelDataStruct.LevelName = LevelName;
+	LevelDataStruct.Rows = TileMap->MapHeight;
+	LevelDataStruct.Columns = TileMap->MapWidth;
 
 	if(TileMap)
 	{
@@ -104,7 +106,7 @@ FLevelDataStruct UDungeonCrawlerGameInstance::CreateLevelDataStruct(FName LevelN
 				LevelDataStruct.Exits = FillLayerArray(TileLayer);
 				break;
 			default:
-				UE_LOG(LogTemp, Error, TEXT("Invalid LayerName, DungeonCrawlerGameInstance.cpp"));
+				UE_LOG(LogTemp, Warning, TEXT("Invalid LayerName (%s), DungeonCrawlerGameInstance.cpp"), *TileLayer->LayerName.ToString());
 				break;
 			}
 		}
