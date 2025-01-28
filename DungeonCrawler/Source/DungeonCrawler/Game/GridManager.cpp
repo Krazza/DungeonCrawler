@@ -248,6 +248,7 @@ TArray<FIntPoint> AGridManager::GetTileNeighbors(const FIntPoint& Position) cons
 	for(const FIntPoint& Dir : Directions)
 	{
 		FIntPoint Neighbor = Position + Dir;
+		// remove IsTileBlocked check
 		if(IsTileValid(Neighbor) && !IsTileBlocked(Neighbor))
 		{
 			Neighbors.Add(Neighbor);
