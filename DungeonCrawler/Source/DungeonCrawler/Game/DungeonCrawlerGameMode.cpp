@@ -135,7 +135,7 @@ void ADungeonCrawlerGameMode::OnEndOfLevelReached_Implementation()
 void ADungeonCrawlerGameMode::OnLevelIndexChanged_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Level index changed, ADungeonCrawlerGameMode::OnLevelIndexChanged"));
-	//Initiate the loading of the next level;
+	UGameplayStatics::OpenLevel(GetWorld(), GameInstance->GetNextLevelData().LevelName);
 }
 
 void ADungeonCrawlerGameMode::OnLevelSequenceGenerated_Implementation()

@@ -7,6 +7,7 @@
 UDungeonCrawlerGameInstance::UDungeonCrawlerGameInstance()
 {
 	CurrentLevelIndex = 0;
+	CreateLevelSequence();
 }
 
 void UDungeonCrawlerGameInstance::SetLevelData(FName LevelName, FLevelDataStruct LevelData)
@@ -70,15 +71,19 @@ void UDungeonCrawlerGameInstance::SetCurrentLevelIndex(int32 LevelIndex)
 
 void UDungeonCrawlerGameInstance::CreateLevelSequence()
 {
-	TArray<FName> Keys;
-	LevelGenerationData.GetKeys(Keys);
-	UPaperTileMap* TileMap = nullptr;
-	for(FName Key : Keys)
+	if(LevelSequence.Num() == 0)
 	{
-		TileMap = LevelGenerationData[Key];
-		LevelSequence.Add(Key, CreateLevelDataStruct(Key, TileMap));
+		TArray<FName> Keys;
+		LevelGenerationData.GetKeys(Keys);
+		UPaperTileMap* TileMap = nullptr;
+		for(FName Key : Keys)
+		{
+			TileMap = LevelGenerationData[Key];
+			LevelSequence.Add(Key, CreateLevelDataStruct(Key, TileMap));
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Level Sequence Generated"));
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Level Sequence Generated"));
+	
 	OnLevelSequenceGenerated.Broadcast();
 }
 

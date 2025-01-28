@@ -36,7 +36,7 @@ void ABaseCharacterZD::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
+// move to player class
 void ABaseCharacterZD::Move(FIntPoint Direction, int Steps)
 {
 	UE_LOG(LogTemp, Warning, TEXT("BaseCharacterZD::Move direction %d, %d"), Direction.X, Direction.Y);
@@ -53,6 +53,11 @@ void ABaseCharacterZD::Move(FIntPoint Direction, int Steps)
 				//update entity tracked array
 				GridManager->UpdateEntityPosition(this, CurrentPosition, newPosition);
 				CurrentPosition = newPosition;
+
+				if(GridManager->IsExitTile(CurrentPosition))
+				{
+					GridManager->OnEndOfLevelReached.Broadcast();
+				}
 			}
 		}
 	}
