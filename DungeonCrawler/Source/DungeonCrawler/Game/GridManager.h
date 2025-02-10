@@ -38,6 +38,9 @@ public:
 	bool IsExitTile(FIntPoint Position) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
+	bool IsRoomTile(FIntPoint Position) const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Grid")
 	void UpdateGridBasedOnLevelData(FLevelDataStruct& LevelData);
 	
 	// *****************

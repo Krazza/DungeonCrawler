@@ -31,6 +31,12 @@ struct FLevelDataStruct
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Data")
 	TArray<FIntPoint> Exits;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Data")
+	TSet<FIntPoint> RoomTiles;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Data")
+	TSet<FIntPoint> CorridorTiles;
 	
 	FLevelDataStruct()
 		:

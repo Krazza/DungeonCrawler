@@ -16,6 +16,8 @@ enum class ETileLayer : uint8
 	Walls,
 	Entrances,
 	Exits,
+	Rooms,
+	Corridors,
 	Invalid
 };
 

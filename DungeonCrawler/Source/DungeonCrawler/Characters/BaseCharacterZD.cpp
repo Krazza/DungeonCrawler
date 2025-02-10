@@ -58,6 +58,12 @@ void ABaseCharacterZD::Move(FIntPoint Direction, int Steps)
 				{
 					GridManager->OnEndOfLevelReached.Broadcast();
 				}
+
+				if(GridManager->IsRoomTile(CurrentPosition))
+				{
+					TSet<FIntPoint> OutRoomTiles;
+					GridManager->GetRoomTiles(CurrentPosition, OutRoomTiles);
+				}
 			}
 		}
 	}

@@ -67,6 +67,15 @@ bool AGridManager::IsExitTile(FIntPoint Position) const
 	return false;
 }
 
+bool AGridManager::IsRoomTile(FIntPoint Position) const
+{
+	if(Position.X > 0 && Position.X < Rows && Position.Y > 0 && Position.Y < Columns)
+	{
+		return Grid[Position.X][Position.Y].bIsRoomTile;
+	}
+	return false;
+}
+
 void AGridManager::UpdateGridBasedOnLevelData(FLevelDataStruct& LevelData)
 {
 	for(FIntPoint Position : LevelData.Walls)
@@ -80,6 +89,23 @@ void AGridManager::UpdateGridBasedOnLevelData(FLevelDataStruct& LevelData)
 		if(Position.X >= 0 && Position.X < Rows && Position.Y >= 0 && Position.Y < Columns)
 		{
 			Grid[Position.X][Position.Y].bIsExit = true;
+		}
+	}
+
+	//make grid tile a room
+	for(FIntPoint Position : LevelData.RoomTiles)
+	{
+		if(Position.X >= 0 && Position.X < Rows && Position.Y >= 0 && Position.Y < Columns)
+		{
+			Grid[Position.X][Position.Y].bIsRoomTile = true;
+		}
+	}
+	//make grid tile a corridor
+	for(FIntPoint Position : LevelData.CorridorTiles)
+	{
+		if(Position.X >= 0 && Position.X < Rows && Position.Y >= 0 && Position.Y < Columns)
+		{
+			Grid[Position.X][Position.Y].bIsCorridorTile = true;
 		}
 	}
 }
@@ -255,7 +281,7 @@ TArray<FIntPoint> AGridManager::GetTileNeighbors(const FIntPoint& Position) cons
 	}
 	return Neighbors;
 }
-
+// fills a set with all tiles of the current room, used for camera positioning 
 void AGridManager::GetRoomTiles(const FIntPoint& StartTile, TSet<FIntPoint>& OutRoomTiles) const
 {
 	TQueue<FIntPoint> OpenSet;
@@ -270,9 +296,14 @@ void AGridManager::GetRoomTiles(const FIntPoint& StartTile, TSet<FIntPoint>& Out
 		TArray<FIntPoint> Neighbors = GetTileNeighbors(CurrentTile);
 		for(FIntPoint Neighbor : Neighbors)
 		{
-			//if(Grid[Neighbor.X][Neighbor.Y])
+			if(Grid[Neighbor.X][Neighbor.Y].bIsRoomTile && !OutRoomTiles.Contains(Neighbor))
+			{
+				OutRoomTiles.Add(Neighbor);
+				OpenSet.Enqueue(Neighbor);
+			}
 		}
 	}
+	UE_LOG(LogTemp, Display, TEXT("OutRoomTiles: %d"), OutRoomTiles.Num());
 }
 
 //**************

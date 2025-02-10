@@ -110,6 +110,20 @@ FLevelDataStruct UDungeonCrawlerGameInstance::CreateLevelDataStruct(FName LevelN
 			case ETileLayer::Exits:
 				LevelDataStruct.Exits = FillLayerArray(TileLayer);
 				break;
+			case ETileLayer::Rooms:
+				{
+					TSet<FIntPoint> RoomTiles;
+					RoomTiles.Append(FillLayerArray(TileLayer));
+					LevelDataStruct.RoomTiles = RoomTiles;
+				}
+				break;
+			case ETileLayer::Corridors:
+				{
+					TSet<FIntPoint> CorridorTiles;
+					CorridorTiles.Append(FillLayerArray(TileLayer));
+					LevelDataStruct.CorridorTiles = CorridorTiles;
+				}
+				break;
 			default:
 				UE_LOG(LogTemp, Warning, TEXT("Invalid LayerName (%s), DungeonCrawlerGameInstance.cpp"), *TileLayer->LayerName.ToString());
 				break;
@@ -143,5 +157,7 @@ ETileLayer UDungeonCrawlerGameInstance::GetTileLayerEnum(const FString& LayerNam
 	if (UpperLayerName == "WALLS") return ETileLayer::Walls;
 	if (UpperLayerName == "ENTRANCES") return ETileLayer::Entrances;
 	if (UpperLayerName == "EXITS") return ETileLayer::Exits;
+	if (UpperLayerName == "ROOMS") return ETileLayer::Rooms;
+	if (UpperLayerName == "CORRIDORS") return ETileLayer::Corridors;
 	return ETileLayer::Invalid;
 }
