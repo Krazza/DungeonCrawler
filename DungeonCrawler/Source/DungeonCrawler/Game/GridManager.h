@@ -83,6 +83,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	TArray<FIntPoint> GetTileNeighbors(const FIntPoint& Position) const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	void GetRoomTiles(const FIntPoint& StartTile, TSet<FIntPoint>& OutRoomTiles) const;
 	// ********************
 	// Data from DataAssets
 	// ********************

@@ -248,13 +248,31 @@ TArray<FIntPoint> AGridManager::GetTileNeighbors(const FIntPoint& Position) cons
 	for(const FIntPoint& Dir : Directions)
 	{
 		FIntPoint Neighbor = Position + Dir;
-		// remove IsTileBlocked check
-		if(IsTileValid(Neighbor) && !IsTileBlocked(Neighbor))
+		if(IsTileValid(Neighbor))
 		{
 			Neighbors.Add(Neighbor);
 		}
 	}
 	return Neighbors;
+}
+
+void AGridManager::GetRoomTiles(const FIntPoint& StartTile, TSet<FIntPoint>& OutRoomTiles) const
+{
+	TQueue<FIntPoint> OpenSet;
+	OpenSet.Enqueue(StartTile);
+	OutRoomTiles.Add(StartTile);
+
+	while(!OpenSet.IsEmpty())
+	{
+		FIntPoint CurrentTile;
+		OpenSet.Dequeue(CurrentTile);
+
+		TArray<FIntPoint> Neighbors = GetTileNeighbors(CurrentTile);
+		for(FIntPoint Neighbor : Neighbors)
+		{
+			//if(Grid[Neighbor.X][Neighbor.Y])
+		}
+	}
 }
 
 //**************
