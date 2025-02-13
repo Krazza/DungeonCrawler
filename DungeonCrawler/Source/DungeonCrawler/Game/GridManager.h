@@ -10,6 +10,8 @@ struct FLevelDataStruct;
 class UPaperTileMap;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndOfLevelReached);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerEnteredRoom);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerExitedRoom);
 
 UCLASS()
 class DUNGEONCRAWLER_API AGridManager : public AActor
@@ -86,9 +88,19 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	TArray<FIntPoint> GetTileNeighbors(const FIntPoint& Position) const;
+
+	// ********************
+	// -== ROOMS ==- -== ROOMS ==- -== ROOMS ==-  
+	// ********************
 	
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	void GetRoomTiles(const FIntPoint& StartTile, TSet<FIntPoint>& OutRoomTiles) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	FIntPoint FindRoomCenter(TSet<FIntPoint>& RoomTiles) const;
+
+	UPROPERTY(BlueprintAssignable, Category="Grid")
+	FOnPlayerEnteredRoom OnPlayerEnteredRoom;
 	// ********************
 	// Data from DataAssets
 	// ********************
@@ -105,6 +117,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Grid")
 	FOnEndOfLevelReached OnEndOfLevelReached;
 	
+	UPROPERTY(BlueprintAssignable, Category = "Grid")
+	FOnEndOfLevelReached OnPlayerExitedRoom;
 private:
 	
 	TArray<TArray<FTileInfo>> Grid;

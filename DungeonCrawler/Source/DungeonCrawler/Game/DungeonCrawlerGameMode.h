@@ -39,6 +39,14 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Grid")
 	void OnLevelSequenceGenerated();
 	virtual void OnLevelSequenceGenerated_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Grid")
+	void OnPlayerEnteredRoom();
+	virtual void OnPlayerEnteredRoom_Implementation();
+	
+	UFUNCTION(BlueprintNativeEvent, Category = "Grid")
+	void OnPlayerExitedRoom();
+	virtual void OnPlayerExitedRoom_Implementation();
 private:
 	UPROPERTY()
 	UDungeonCrawlerGameInstance* GameInstance;

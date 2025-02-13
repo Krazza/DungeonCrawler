@@ -8,6 +8,7 @@
 #include "GridManager.h"
 #include "TurnManager.h"
 #include "DungeonCrawler/Characters/BaseCharacterZD.h"
+#include "DungeonCrawler/Characters/BasePlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 ADungeonCrawlerGameMode::ADungeonCrawlerGameMode()
@@ -16,8 +17,6 @@ ADungeonCrawlerGameMode::ADungeonCrawlerGameMode()
 	DungeonGameState = nullptr;
 	PlayerController = nullptr;
 	GameInstance = nullptr;
-
-	
 }
 
 void ADungeonCrawlerGameMode::BeginPlay()
@@ -80,7 +79,7 @@ void ADungeonCrawlerGameMode::StartGame()
 		{
 			if(PlayerController)
 			{
-				PlayerCharacterZD = Cast<ABaseCharacterZD>(PlayerController->GetPawn());
+				PlayerCharacterZD = Cast<ABasePlayerCharacter>(PlayerController->GetPawn());
 			}
 		}
 		
@@ -104,7 +103,7 @@ void ADungeonCrawlerGameMode::PositionPlayerCharacter()
 	{
 		if(PlayerController)
 		{
-			PlayerCharacterZD = Cast<ABaseCharacterZD>(PlayerController->GetPawn());
+			PlayerCharacterZD = Cast<ABasePlayerCharacter>(PlayerController->GetPawn());
 		}
 	}
 	
@@ -123,6 +122,8 @@ void ADungeonCrawlerGameMode::OnGridManagerInitialized_Implementation()
 {
 	PositionPlayerCharacter();
 	DungeonGameState->GetGridManager()->OnEndOfLevelReached.AddDynamic(this, &ADungeonCrawlerGameMode::OnEndOfLevelReached);
+	DungeonGameState->GetGridManager()->OnPlayerEnteredRoom.AddDynamic(this, &ADungeonCrawlerGameMode::OnPlayerEnteredRoom);
+	DungeonGameState->GetGridManager()->OnPlayerExitedRoom.AddDynamic(this, &ADungeonCrawlerGameMode::OnPlayerExitedRoom);
 }
 
 void ADungeonCrawlerGameMode::OnEndOfLevelReached_Implementation()
@@ -151,4 +152,18 @@ void ADungeonCrawlerGameMode::OnLevelSequenceGenerated_Implementation()
 	{
 		UE_LOG(LogTemp, Error, TEXT("DungeonCrawlerGameMode::OnLevelSequenceGenerated()"));
 	}
+}
+
+void ADungeonCrawlerGameMode::OnPlayerEnteredRoom_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player entered room"));
+
+	//position camera
+}
+
+void ADungeonCrawlerGameMode::OnPlayerExitedRoom_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player exited room"));
+
+	//reposition camera
 }

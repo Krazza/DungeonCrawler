@@ -281,6 +281,12 @@ TArray<FIntPoint> AGridManager::GetTileNeighbors(const FIntPoint& Position) cons
 	}
 	return Neighbors;
 }
+//**************
+// -== ROOMS ==- -== ROOMS ==- -== ROOMS ==-
+//**************
+
+// move to a separate class?
+
 // fills a set with all tiles of the current room, used for camera positioning 
 void AGridManager::GetRoomTiles(const FIntPoint& StartTile, TSet<FIntPoint>& OutRoomTiles) const
 {
@@ -303,8 +309,23 @@ void AGridManager::GetRoomTiles(const FIntPoint& StartTile, TSet<FIntPoint>& Out
 			}
 		}
 	}
-	UE_LOG(LogTemp, Display, TEXT("OutRoomTiles: %d"), OutRoomTiles.Num());
 }
+
+FIntPoint AGridManager::FindRoomCenter(TSet<FIntPoint>& RoomTiles) const
+{
+	if(RoomTiles.IsEmpty())
+		return FIntPoint(0, 0);
+
+	FVector2D Average(0.f, 0.f);
+	for(const FIntPoint& Tile : RoomTiles)
+	{
+		Average += FVector2D(Tile);
+	}
+	
+	Average /= RoomTiles.Num();
+	return FIntPoint(FMath::RoundToInt(Average.X), FMath::RoundToInt(Average.Y));
+}
+
 
 //**************
 // -== DEBUG ==-

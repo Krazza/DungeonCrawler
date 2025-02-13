@@ -14,7 +14,6 @@ ABaseCharacterZD::ABaseCharacterZD()
 	PrimaryActorTick.bCanEverTick = true;
 	GridManager = nullptr;
 	CurrentPosition = FIntPoint(0,0);
-
 	TurnBasedComponent = CreateDefaultSubobject<UTurnBasedComponent>(TEXT("TurnBasedComponent"));
 }
 
@@ -39,57 +38,12 @@ void ABaseCharacterZD::Tick(float DeltaTime)
 // move to player class
 void ABaseCharacterZD::Move(FIntPoint Direction, int Steps)
 {
-	UE_LOG(LogTemp, Warning, TEXT("BaseCharacterZD::Move direction %d, %d"), Direction.X, Direction.Y);
-	// DEBUG/TEST
-	if(GridManager)
-	{
-		FIntPoint newPosition = CurrentPosition + Direction;
-		if(GridManager->IsTileValid(newPosition) && !GridManager->IsTileBlocked(newPosition))
-		{
-			if(CanAct())
-			{
-				UseAction();
-				SetActorLocation(GridManager->GridToWorldPosition(FIntPoint(newPosition.X, newPosition.Y), true));
-				//update entity tracked array
-				GridManager->UpdateEntityPosition(this, CurrentPosition, newPosition);
-				CurrentPosition = newPosition;
-
-				if(GridManager->IsExitTile(CurrentPosition))
-				{
-					GridManager->OnEndOfLevelReached.Broadcast();
-				}
-
-				if(GridManager->IsRoomTile(CurrentPosition))
-				{
-					TSet<FIntPoint> OutRoomTiles;
-					GridManager->GetRoomTiles(CurrentPosition, OutRoomTiles);
-				}
-			}
-		}
-	}
+	
 }
 
 void ABaseCharacterZD::SetPosition(FIntPoint Position)
 {
-	if (!GridManager)
-	{
-		if(ADungeonCrawlerGameState* DungeonGameState = Cast<ADungeonCrawlerGameState>(UGameplayStatics::GetGameState(this)))
-		{
-			GridManager = DungeonGameState->GetGridManager();
-		}
-	}
-
-	if(!GridManager)
-	{
-		UE_LOG(LogTemp, Error, TEXT("GridManager is null"));
-		return;
-	}
 	
-	FVector newWorldPosition = GridManager->GridToWorldPosition(Position, true);
-	SetActorLocation(newWorldPosition);
-	CurrentPosition = Position;
-	UE_LOG(LogTemp, Warning, TEXT("Setting position: %d, %d"), Position.X, Position.Y);
-	UE_LOG(LogTemp, Warning, TEXT("Setting position: %f, %f, %f"), newWorldPosition.X, newWorldPosition.Y, newWorldPosition.Z);
 }
 
 void ABaseCharacterZD::UseAction()

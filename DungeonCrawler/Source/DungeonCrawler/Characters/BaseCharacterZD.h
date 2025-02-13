@@ -23,14 +23,34 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	AGridManager* GridManager;
+
+	UPROPERTY()
+	FIntPoint CurrentPosition;
+
+	UPROPERTY(BlueprintAssignable, Category = "Turn System")
+	FTurnActionCompleteDelegate TurnActionCompleteDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Turn System")
+	FTurnCompleteDelegate TurnCompleteDelegate;
+
+	// ***************
+	// UTurnBasedComponent
+	// ***************
+
+	// Stores Owner's Turn System related data
+	UPROPERTY(EditDefaultsOnly, Instanced, Category="Turn System")
+	UTurnBasedComponent* TurnBasedComponent;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Move(FIntPoint Direction, int Steps = 1);
+	virtual void Move(FIntPoint Direction, int Steps = 1);
 
 	// For StartingPosition() and alike
-	void SetPosition(FIntPoint Position);
+	virtual void SetPosition(FIntPoint Position);
 
 	// ***************
 	// ITurnBasedActor Interface
@@ -50,22 +70,6 @@ public:
 	// Communicating the completion of a Turn to the Turn Manager, ITurnBasedActor interface origin
 	virtual FTurnCompleteDelegate& OnTurnComplete() override { return TurnCompleteDelegate; }
 private:
-	FIntPoint CurrentPosition;
+	
 
-	UPROPERTY()
-	AGridManager* GridManager;
-
-	UPROPERTY(BlueprintAssignable, Category = "Turn System")
-	FTurnActionCompleteDelegate TurnActionCompleteDelegate;
-
-	UPROPERTY(BlueprintAssignable, Category = "Turn System")
-	FTurnCompleteDelegate TurnCompleteDelegate;
-
-	// ***************
-	// UTurnBasedComponent
-	// ***************
-
-	// Stores Owner's Turn System related data
-	UPROPERTY(EditDefaultsOnly, Instanced, Category="Turn System")
-	UTurnBasedComponent* TurnBasedComponent;
 };
