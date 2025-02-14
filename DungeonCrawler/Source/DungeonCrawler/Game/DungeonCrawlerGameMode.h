@@ -48,15 +48,15 @@ protected:
 	void OnPlayerExitedRoom();
 	virtual void OnPlayerExitedRoom_Implementation();
 private:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UDungeonCrawlerGameInstance* GameInstance;
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	ABaseCharacterZD* PlayerCharacterZD;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	ADungeonCrawlerGameState* DungeonGameState;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	ADCPlayerController* PlayerController;
 };

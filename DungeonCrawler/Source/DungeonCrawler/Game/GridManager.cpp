@@ -311,7 +311,7 @@ void AGridManager::GetRoomTiles(const FIntPoint& StartTile, TSet<FIntPoint>& Out
 	}
 }
 
-FIntPoint AGridManager::FindRoomCenter(TSet<FIntPoint>& RoomTiles) const
+FIntPoint AGridManager::FindRoomCenter(const TSet<FIntPoint>& RoomTiles) const
 {
 	if(RoomTiles.IsEmpty())
 		return FIntPoint(0, 0);

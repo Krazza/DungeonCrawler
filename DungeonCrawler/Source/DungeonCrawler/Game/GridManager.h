@@ -97,7 +97,7 @@ public:
 	void GetRoomTiles(const FIntPoint& StartTile, TSet<FIntPoint>& OutRoomTiles) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Grid")
-	FIntPoint FindRoomCenter(TSet<FIntPoint>& RoomTiles) const;
+	FIntPoint FindRoomCenter(const TSet<FIntPoint>& RoomTiles) const;
 
 	UPROPERTY(BlueprintAssignable, Category="Grid")
 	FOnPlayerEnteredRoom OnPlayerEnteredRoom;

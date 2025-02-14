@@ -110,7 +110,16 @@ void ADungeonCrawlerGameMode::PositionPlayerCharacter()
 	if(PlayerCharacterZD)
 	{
 		int32 randomIndex = FMath::RandRange(0, GameInstance->GetCurrentLevelData().Entrances.Num() - 1);
-		PlayerCharacterZD->SetPosition(GameInstance->GetCurrentLevelData().Entrances[randomIndex]);
+		FIntPoint RandomPosition = GameInstance->GetCurrentLevelData().Entrances[randomIndex];
+		PlayerCharacterZD->SetPosition(RandomPosition);
+
+		//Might want to separate into 2 or (n) different events in the future
+		// one for camera
+		// another for whatever
+		if(DungeonGameState->GetGridManager()->IsRoomTile(RandomPosition))
+		{
+			OnPlayerEnteredRoom();
+		}
 	}
 	else
 	{

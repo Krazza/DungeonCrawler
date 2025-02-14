@@ -19,15 +19,15 @@ public:
 	// Sets default values for this character's properties
 	ABaseCharacterZD();
 
+	UPROPERTY(BlueprintReadOnly)
+	FIntPoint CurrentPosition;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
 	AGridManager* GridManager;
-
-	UPROPERTY()
-	FIntPoint CurrentPosition;
 
 	UPROPERTY(BlueprintAssignable, Category = "Turn System")
 	FTurnActionCompleteDelegate TurnActionCompleteDelegate;
