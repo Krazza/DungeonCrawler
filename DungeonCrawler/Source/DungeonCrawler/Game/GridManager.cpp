@@ -352,7 +352,7 @@ void AGridManager::ConstructDebugGrid(TArray<TArray<char>>& GridVisuals)
 			//{
 			//	SetTileState(FIntPoint(Row, Column), true);
 			//}
-			GridVisuals[Row][Column] = Grid[Row][Column].bIsBlocked ? 'X' : '.';
+			GridVisuals[Row][Column] = Grid[Row][Column].bIsBlocked ? '#' : '.';
 
 			if(isTileOccupiedByEntity(FIntPoint(Row, Column)))
 			{

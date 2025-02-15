@@ -29,7 +29,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Grid")
 	void InitializeGrid(int32 InRows, int32 InColumns, float InTileSize);
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	void SetTileState(FIntPoint TilePosition, bool bIsBlocked);
 	
@@ -122,7 +122,8 @@ public:
 private:
 	
 	TArray<TArray<FTileInfo>> Grid;
-	
+
+private:
 	UPROPERTY()
 	TMap<FIntPoint, AActor*> OccupiedTiles;
 
