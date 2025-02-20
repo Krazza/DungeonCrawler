@@ -12,6 +12,7 @@ class UPaperTileMap;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndOfLevelReached);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerEnteredRoom);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerExitedRoom);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerPositionChanged, const FIntPoint, OldPosition, const FIntPoint, NewPosition);
 
 UCLASS()
 class DUNGEONCRAWLER_API AGridManager : public AActor
@@ -119,6 +120,9 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category = "Grid")
 	FOnEndOfLevelReached OnPlayerExitedRoom;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerPositionChanged OnPlayerPositionChanged;
 private:
 	
 	TArray<TArray<FTileInfo>> Grid;

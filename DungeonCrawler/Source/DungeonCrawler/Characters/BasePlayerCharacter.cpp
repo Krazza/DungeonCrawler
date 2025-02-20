@@ -49,33 +49,12 @@ void ABasePlayerCharacter::Move(FIntPoint Direction, int Steps)
 				//update entity tracked array
 				GridManager->UpdateEntityPosition(this, CurrentPosition, newPosition);
 				CurrentPosition = newPosition;
-				
-				if(GridManager->IsExitTile(CurrentPosition))
-				{
-					GridManager->OnEndOfLevelReached.Broadcast();
-				}
-				
-				if(GridManager->IsRoomTile(CurrentPosition) && !GridManager->IsRoomTile(oldPosition))
-				{
-					//switch to a broadcasting method?
-					//notify the game mode
-					//position the camera
-					
-					//TSet<FIntPoint> OutRoomTiles;
-					//GridManager->GetRoomTiles(CurrentPosition, OutRoomTiles);
-
-					GridManager->OnPlayerEnteredRoom.Broadcast();
-				}
-				else if(GridManager->IsRoomTile(oldPosition) && !GridManager->IsRoomTile(CurrentPosition))
-				{
-					GridManager->OnPlayerExitedRoom.Broadcast();
-				}
 			}
 		}
 	}
 }
 
-void ABasePlayerCharacter::SetPosition(FIntPoint Position)
+void ABasePlayerCharacter::SetPosition(FIntPoint newGridPosition)
 {
 	if (!GridManager)
 	{
@@ -91,10 +70,9 @@ void ABasePlayerCharacter::SetPosition(FIntPoint Position)
 		return;
 	}
 	
-	FVector newWorldPosition = GridManager->GridToWorldPosition(Position, true);
+	FVector newWorldPosition = GridManager->GridToWorldPosition(newGridPosition, true);
 	SetActorLocation(newWorldPosition);
-	CurrentPosition = Position;
-
+	
 	if(GridManager->IsRoomTile(CurrentPosition))
 	{
 		//switch to a broadcasting method?
@@ -102,8 +80,8 @@ void ABasePlayerCharacter::SetPosition(FIntPoint Position)
 		//position the camera
 		//TSet<FIntPoint> OutRoomTiles;
 		//GridManager->GetRoomTiles(CurrentPosition, OutRoomTiles);
-		
 		GridManager->OnPlayerEnteredRoom.Broadcast();
 	}
+	CurrentPosition = newGridPosition;
 }
 

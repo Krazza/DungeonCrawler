@@ -1,5 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 #include "GridManager.h"
+
+#include "DungeonCrawler/Characters/BasePlayerCharacter.h"
 #include "DungeonCrawler/Utility/FAStarNode.h"
 #include "DungeonCrawler/Utility/FLevelDataStruct.h"
 
@@ -167,6 +169,25 @@ void AGridManager::UpdateEntityPosition(AActor* Entity, FIntPoint OldPosition, F
 	}
 	OccupiedTiles.Add(NewPosition, Entity);
 	DrawDebugGrid();
+
+	if(ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(Entity))
+	{
+		OnPlayerPositionChanged.Broadcast(OldPosition, NewPosition);
+
+		if(IsExitTile(NewPosition))
+		{
+			OnEndOfLevelReached.Broadcast();
+		}
+				
+		if(IsRoomTile(NewPosition) && !IsRoomTile(OldPosition))
+		{
+			OnPlayerEnteredRoom.Broadcast();
+		}
+		else if(IsRoomTile(OldPosition) && !IsRoomTile(NewPosition))
+		{
+			OnPlayerExitedRoom.Broadcast();
+		}
+	}
 }
 
 bool AGridManager::isTileOccupiedByEntity(FIntPoint Position)

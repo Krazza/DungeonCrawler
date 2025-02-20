@@ -29,5 +29,5 @@ public:
 	virtual void Move(FIntPoint Direction, int Steps = 1) override;
 
 	// For StartingPosition() and alike
-	virtual void SetPosition(FIntPoint Position) override;
+	virtual void SetPosition(FIntPoint newGridPosition) override;
 };
