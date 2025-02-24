@@ -2,6 +2,8 @@
 
 
 #include "DungeonCrawlerGameState.h"
+
+#include "DungeonCrawlerGameInstance.h"
 #include "GridManager.h"
 #include "TurnManager.h"
 #include "DungeonCrawler/Utility/FLevelDataStruct.h"
@@ -58,5 +60,10 @@ void ADungeonCrawlerGameState::InitializeGridManager(FLevelDataStruct& LevelData
 AGridManager* ADungeonCrawlerGameState::GetGridManager() const
 {
 	return GridManager;
+}
+
+void ADungeonCrawlerGameState::HandleGridManagerInitialized_Implementation()
+{
+	
 }
 

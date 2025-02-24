@@ -38,8 +38,9 @@ public:
 	UTurnManager* GetTurnManager() const { return TurnManager; }
 protected:
 	// Used to spawn the procedural mesh for Grid in editor visualization
-	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
+	UFUNCTION(BlueprintNativeEvent, Category = "Grid")
 	void HandleGridManagerInitialized();
+	virtual void HandleGridManagerInitialized_Implementation();
 
 	UPROPERTY()
 	UTurnManager* TurnManager;

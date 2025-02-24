@@ -19,7 +19,6 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 void ABasePlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	TileDiscoveryDistance = 3;
 }
 
 // Called every frame

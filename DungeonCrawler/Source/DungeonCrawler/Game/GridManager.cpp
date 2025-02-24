@@ -27,14 +27,19 @@ void AGridManager::InitializeGrid(int32 InRows, int32 InColumns, float InTileSiz
 	Columns = InColumns;
 	TileSize = InTileSize;
 	
-	Grid.SetNum(Rows);
+	//Grid.SetNum(Rows);
+	UGrid.SetNum(Rows);
 	for(int32 Row = 0; Row < Rows; Row++)
 	{
-		Grid[Row].SetNum(Columns);
+		//Grid[Row].SetNum(Columns);
+		FTileRow NewRow;
+		NewRow.Tiles.SetNum(Columns);
 		for(int32 Column = 0; Column < Columns; Column++)
 		{
-			Grid[Row][Column] = FTileInfo();
+			//Grid[Row][Column] = FTileInfo();
+			NewRow.Tiles.Add(FTileInfo());
 		}
+		UGrid[Row] = NewRow;
 	}
 }
 
@@ -47,7 +52,8 @@ void AGridManager::SetTileState(FIntPoint TilePosition, bool bIsBlocked)
 	//change to isTileValid()
 	if(TilePosition.X >= 0 && TilePosition.X < Rows && TilePosition.Y >= 0 && TilePosition.Y < Columns)
 	{
-		Grid[TilePosition.X][TilePosition.Y].bIsBlocked = bIsBlocked;
+		//Grid[TilePosition.X][TilePosition.Y].bIsBlocked = bIsBlocked;
+		UGrid[TilePosition.X].Tiles[TilePosition.Y].bIsBlocked = bIsBlocked;
 	}
 }
 
@@ -55,7 +61,8 @@ bool AGridManager::IsTileBlocked(FIntPoint(Position)) const
 {
 	if(Position.X > 0 && Position.X < Rows && Position.Y > 0 && Position.Y < Columns)
 	{
-		return Grid[Position.X][Position.Y].bIsBlocked;
+		//return Grid[Position.X][Position.Y].bIsBlocked;
+		return UGrid[Position.X].Tiles[Position.Y].bIsBlocked;
 	}
 	return true;
 }
@@ -64,7 +71,8 @@ bool AGridManager::IsExitTile(FIntPoint Position) const
 {
 	if(Position.X > 0 && Position.X < Rows && Position.Y > 0 && Position.Y < Columns)
 	{
-		return Grid[Position.X][Position.Y].bIsExit;
+		//return Grid[Position.X][Position.Y].bIsExit;
+		return UGrid[Position.X].Tiles[Position.Y].bIsExit;
 	}
 	return false;
 }
@@ -73,7 +81,8 @@ bool AGridManager::IsRoomTile(FIntPoint Position) const
 {
 	if(Position.X > 0 && Position.X < Rows && Position.Y > 0 && Position.Y < Columns)
 	{
-		return Grid[Position.X][Position.Y].bIsRoomTile;
+		//return Grid[Position.X][Position.Y].bIsRoomTile;
+		return UGrid[Position.X].Tiles[Position.Y].bIsRoomTile;
 	}
 	return false;
 }
@@ -90,7 +99,8 @@ void AGridManager::UpdateGridBasedOnLevelData(FLevelDataStruct& LevelData)
 		// //change to isTileValid()
 		if(Position.X >= 0 && Position.X < Rows && Position.Y >= 0 && Position.Y < Columns)
 		{
-			Grid[Position.X][Position.Y].bIsExit = true;
+			//Grid[Position.X][Position.Y].bIsExit = true;
+			UGrid[Position.X].Tiles[Position.Y].bIsExit = true;
 		}
 	}
 
@@ -99,7 +109,8 @@ void AGridManager::UpdateGridBasedOnLevelData(FLevelDataStruct& LevelData)
 	{
 		if(Position.X >= 0 && Position.X < Rows && Position.Y >= 0 && Position.Y < Columns)
 		{
-			Grid[Position.X][Position.Y].bIsRoomTile = true;
+			//Grid[Position.X][Position.Y].bIsRoomTile = true;
+			UGrid[Position.X].Tiles[Position.Y].bIsRoomTile = true;
 		}
 	}
 	//make grid tile a corridor
@@ -107,7 +118,8 @@ void AGridManager::UpdateGridBasedOnLevelData(FLevelDataStruct& LevelData)
 	{
 		if(Position.X >= 0 && Position.X < Rows && Position.Y >= 0 && Position.Y < Columns)
 		{
-			Grid[Position.X][Position.Y].bIsCorridorTile = true;
+			//Grid[Position.X][Position.Y].bIsCorridorTile = true;
+			UGrid[Position.X].Tiles[Position.Y].bIsCorridorTile = true;
 		}
 	}
 }
@@ -323,7 +335,8 @@ void AGridManager::GetRoomTiles(const FIntPoint& StartTile, TSet<FIntPoint>& Out
 		TArray<FIntPoint> Neighbors = GetTileNeighbors(CurrentTile);
 		for(FIntPoint Neighbor : Neighbors)
 		{
-			if(Grid[Neighbor.X][Neighbor.Y].bIsRoomTile && !OutRoomTiles.Contains(Neighbor))
+			//if(Grid[Neighbor.X][Neighbor.Y].bIsRoomTile && !OutRoomTiles.Contains(Neighbor))
+			if(UGrid[Neighbor.X].Tiles[Neighbor.Y].bIsRoomTile && !OutRoomTiles.Contains(Neighbor))
 			{
 				OutRoomTiles.Add(Neighbor);
 				OpenSet.Enqueue(Neighbor);
@@ -346,7 +359,6 @@ FIntPoint AGridManager::FindRoomCenter(const TSet<FIntPoint>& RoomTiles) const
 	Average /= RoomTiles.Num();
 	return FIntPoint(FMath::RoundToInt(Average.X), FMath::RoundToInt(Average.Y));
 }
-
 
 //**************
 // -== DEBUG ==-
@@ -373,7 +385,8 @@ void AGridManager::ConstructDebugGrid(TArray<TArray<char>>& GridVisuals)
 			//{
 			//	SetTileState(FIntPoint(Row, Column), true);
 			//}
-			GridVisuals[Row][Column] = Grid[Row][Column].bIsBlocked ? '#' : '.';
+			//GridVisuals[Row][Column] = Grid[Row][Column].bIsBlocked ? '#' : '.';
+			GridVisuals[Row][Column] = UGrid[Row].Tiles[Column].bIsBlocked ? '#' : '.';
 
 			if(isTileOccupiedByEntity(FIntPoint(Row, Column)))
 			{

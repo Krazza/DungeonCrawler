@@ -19,8 +19,13 @@ struct FTileRow
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TArray<FTileInfo> Tiles;
+
+	FTileRow()
+		: Tiles()
+	{}
+	
 };
 UCLASS()
 class DUNGEONCRAWLER_API AGridManager : public AActor
@@ -110,7 +115,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Grid")
 	FOnPlayerEnteredRoom OnPlayerEnteredRoom;
-
+	
 	// ********************
 	// Data from DataAssets
 	// ********************
@@ -140,11 +145,17 @@ public:
 	// ******************
 	// 
 	// ******************
+
+	UFUNCTION(BlueprintCallable, Category = "Grid")
+	const TArray<FTileRow>& GetGrid() const { return UGrid; }
+	
 private:
 	
 	TArray<TArray<FTileInfo>> Grid;
 
-private:
+	UPROPERTY()
+	TArray<FTileRow> UGrid;
+	
 	UPROPERTY()
 	TMap<FIntPoint, AActor*> OccupiedTiles;
 
