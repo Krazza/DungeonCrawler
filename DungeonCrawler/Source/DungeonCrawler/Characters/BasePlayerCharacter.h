@@ -30,4 +30,7 @@ public:
 
 	// For StartingPosition() and alike
 	virtual void SetPosition(FIntPoint newGridPosition) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 TileDiscoveryDistance;
 };

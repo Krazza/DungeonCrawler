@@ -19,12 +19,16 @@ struct FTileInfo
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsCorridorTile;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsDiscovered;
 	
 	FTileInfo()
 		:
 	bIsBlocked(false),
 	bIsExit(false),
 	bIsRoomTile(false),
-	bIsCorridorTile(false)
+	bIsCorridorTile(false),
+	bIsDiscovered(false)
 	{}
 };

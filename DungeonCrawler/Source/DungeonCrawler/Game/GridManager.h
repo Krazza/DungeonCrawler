@@ -14,6 +14,14 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerEnteredRoom);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerExitedRoom);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerPositionChanged, const FIntPoint, OldPosition, const FIntPoint, NewPosition);
 
+USTRUCT(BlueprintType)
+struct FTileRow
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<FTileInfo> Tiles;
+};
 UCLASS()
 class DUNGEONCRAWLER_API AGridManager : public AActor
 {
@@ -102,6 +110,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Grid")
 	FOnPlayerEnteredRoom OnPlayerEnteredRoom;
+
 	// ********************
 	// Data from DataAssets
 	// ********************
@@ -115,6 +124,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	float TileSize;
 
+	// ******************
+	// 
+	// ******************
+	
 	UPROPERTY(BlueprintAssignable, Category = "Grid")
 	FOnEndOfLevelReached OnEndOfLevelReached;
 	
@@ -123,6 +136,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerPositionChanged OnPlayerPositionChanged;
+	
+	// ******************
+	// 
+	// ******************
 private:
 	
 	TArray<TArray<FTileInfo>> Grid;
@@ -130,6 +147,9 @@ private:
 private:
 	UPROPERTY()
 	TMap<FIntPoint, AActor*> OccupiedTiles;
+
+	//Utility
+
 
 	// *************
 	// -== DEBUG ==-
